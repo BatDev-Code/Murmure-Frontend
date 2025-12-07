@@ -1,32 +1,58 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 // Import screens
-// import LoadingScreen from "../screens/loading/LoadingScreen";
 import HomeScreen from "../screens/home/HomeScreen";
 
+import ShelvesScreen from "../screens/shelves/ShelvesScreen";
+
 // Meditations
-// import AccueilMeditationsScreen from "../screens/meditations/AccueilMeditationsScreen";
-// import MeditationsPlayerScreen from "../screens/meditations/MeditationsPlayerScreen";
+import MeditationHomeScreen from "../screens/meditations/MeditationHomeScreen";
+import MeditationPlayerScreen from "../screens/meditations/MeditationPlayerScreen";
+
+// Respirations
+import RespirationHomeScreen from "../screens/respirations/RespirationHomeScreen";
+import RespirationCountdownScreen from "../screens/respirations/RespirationCountdownScreen";
+
+// Chat
+import ChatScreen from "../screens/chat/ChatScreen";
+
+// Importer tous les screens : auth,lessons, loading, etc... 
+
+
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   return (
     <Stack.Navigator
+      initialRouteName="Home" //Ici chacun met le nom de son screen, comme ça qd on lance expoGo on arrive dessus. A la fin, on mettre "Home"
       screenOptions={{ headerShown: false }}
     >
-      {/* Ici que chacun déplace en premier l'écran qu'il est en train de coder!! */}
-     
+      {/* Home et loading */}
       <Stack.Screen name="Home" component={HomeScreen} />
 
-      {/* Auth */}
-      {/* <Stack.Screen name="AuthChoice" component={AuthChoiceScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Signup" component={SignupScreen} />
-      <Stack.Screen name="Account" component={AccountScreen} /> */}
+      {/* Shelves (étagère) */}
+      <Stack.Screen name="Shelves" component={ShelvesScreen} />
 
+      {/* Meditation */}
+      <Stack.Screen
+        name="MeditationHome"
+        component={MeditationHomeScreen}
+      />
+      <Stack.Screen name="MeditationPlayer" component={MeditationPlayerScreen} />
 
+      {/* Respiration */}
+      <Stack.Screen
+        name="RespirationHome"
+        component={RespirationHomeScreen}
+      />
+      <Stack.Screen
+        name="RespirationCountdown"
+        component={RespirationCountdownScreen}
+      />
 
+      {/* Chat */}
+      <Stack.Screen name="Chat" component={ChatScreen} />
     </Stack.Navigator>
   );
 }

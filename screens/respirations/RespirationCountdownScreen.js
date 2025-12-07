@@ -1,20 +1,21 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import Button from "../../components/Button";
 
-import Label from "../../components/Label";
-
-export default function HomeScreen({ navigation }) {
+export default function RespirationCountdownScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Bienvenue dans Murmure</Text>
-      <Text style={styles.subtitle}>Ecran Home (placeholder)</Text>
+      <Text style={styles.title}>Bienvenue dans Respiration</Text>
+      <Text style={styles.subtitle}>Ecran RespirationCountdownScreen</Text>
 
-      {/* Lien vers l'étagère */}
-      <Label
+      {/* Bouton Suivant */}
+      <Button
         onPress={() => navigation.navigate("Shelves")}
-        children="Etagère"
-             />
+        label="Retour Etagère"
+        type="primary"
+      />
 
-      {/* Ici ajouter le lien vers la map, et vers auth */}
+      {/* Bouton Précédent */}
+      <Button onPress={() => navigation.goBack()} type="back" />
     </View>
   );
 }
