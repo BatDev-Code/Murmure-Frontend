@@ -97,7 +97,7 @@ export default function MeditationHomeScreen({ navigation }) {
 
           {/* Choix de la durée avec composant de type Slider */}
           <DurationSelector
-            mode={mode} 
+            mode={mode}
             value={duration} // valeur actuelle
             onChange={(value) => setDuration(value)} //permet de savoir
           />
@@ -114,7 +114,7 @@ export default function MeditationHomeScreen({ navigation }) {
 
           {/* Bouton Précédent */}
           <Button
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.navigate("Shelves")}
             type="back"
             style={styles.backButton}
           />
@@ -241,8 +241,9 @@ const styles = StyleSheet.create({
 
   startButton: {
     alignSelf: "center",
-    width: "60%",
-    marginBottom: 30,
+    width: "80%",
+   justifyContent: "center",
+  alignItems: "center",
   },
 
   backButton: {

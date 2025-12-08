@@ -1,7 +1,13 @@
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // icônes pour la flèche
 
-export default function Button({ label, onPress, type = "primary", style }) {
+export default function Button({
+  label,
+  onPress,
+  type = "primary",
+  style,
+  icon,
+}) {
   return (
     <TouchableOpacity
       onPress={onPress}

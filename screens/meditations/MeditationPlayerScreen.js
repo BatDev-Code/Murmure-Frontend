@@ -10,8 +10,9 @@ import { Audio } from "expo-av";
 import { useEffect, useState } from "react";
 import Button from "../../components/Button";
 
+import ConfirmModal from "../../components/ConfirmModal";
+import { Ionicons } from "@expo/vector-icons";
 // Doc audio: https://docs.expo.dev/versions/latest/sdk/av/
-
 
 import { BACKEND_ADDRESS } from "../../config";
 
@@ -25,11 +26,13 @@ export default function MeditationPlayer({ route, navigation }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // console.log("audioURL:", audioUrl);
-  // console.log("sound", sound);
-  // console.log("isPlaying", isPlaying);
-  // console.log("loading", loading);
-  // console.log("back", BACKEND_ADDRESS);
+  // states en lien avec la barre de progression
+  const [position, setPosition] = useState(0); // en ms
+  const [durationMs, setDurationMs] = useState(1); // en ms (éviter division par 0)
+  const [showExitPopup, setShowExitPopup] = useState(false); // popup sortie
+
+  // state de congrats
+  const [showCongrats, setShowCongrats] = useState(false);
 
   useEffect(() => {
     fetch(`${BACKEND_ADDRESS}/meditation`, {
@@ -54,11 +57,22 @@ export default function MeditationPlayer({ route, navigation }) {
         // });
 
         // charger le son
-        const { sound: newSound } = await Audio.Sound.createAsync(//createAsync()télécharge le fichier url et renvoie l'objet sound
+        const { sound: newSound } = await Audio.Sound.createAsync(
+          //createAsync()télécharge le fichier url et renvoie l'objet sound
           { uri: data.audioUrl },
-          { shouldPlay: true },//lance automatiquement la lecture
+          { shouldPlay: true }, //lance automatiquement la lecture
           (status) => {
-            console.log("status audio :", status);
+            // console.log("status audio :", status); //status: callback appelée en permanence
+            if (status.isLoaded) {
+              setPosition(status.positionMillis);
+              setDurationMs(status.durationMillis);
+              setIsPlaying(status.isPlaying);
+            }
+            // pour modale de félicitations
+            if (status.didJustFinish) {
+              setShowCongrats(true);
+              setIsPlaying(false);
+            }
           }
         );
 
@@ -67,6 +81,21 @@ export default function MeditationPlayer({ route, navigation }) {
         setLoading(false);
       });
   }, []);
+
+  // calcul de la progression en fonction du status (sound)
+  const progress = position / durationMs; // entre 0 et 1
+
+  //calcul temps restant et ecoule
+  const ecoule = position / 1000; // en secondes
+  const total = durationMs / 1000;
+  const restant = total - ecoule;
+  // console.log("ecoule, total", ecoule, total);
+
+  function formatTime(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s < 10 ? "0" : ""}${s}`;
+  }
 
   // Nettoyage du son
   useEffect(() => {
@@ -84,7 +113,7 @@ export default function MeditationPlayer({ route, navigation }) {
     if (!sound) return;
 
     if (isPlaying) {
-      await sound.pauseAsync();//met en pause
+      await sound.pauseAsync(); //met en pause
       setIsPlaying(false);
     } else {
       await sound.playAsync(); //démarrage de la lecture
@@ -96,22 +125,20 @@ export default function MeditationPlayer({ route, navigation }) {
   const stopMeditation = async () => {
     // sécurité nettoyage du son quand on quitte la page
     if (sound) {
-      await sound.stopAsync();//arrêt et revient à zéro
-      await sound.unloadAsync();//libérer la mémoire (destruction du playser)
+      await sound.stopAsync(); //arrêt et revient à zéro
+      await sound.unloadAsync(); //libérer la mémoire (destruction du playser)
     }
-
+    setShowExitPopup(false);
     navigation.goBack();
   };
 
   return (
-  
-
     <ImageBackground
       source={require("../../assets/meditation/meditationBkg.png")}
       style={styles.container}
     >
       {loading ? (
-        <ActivityIndicator size="large" color="#fff" />
+        <ActivityIndicator size="large" color="#fff" /> //chargement:rond qui tourne
       ) : (
         <View style={styles.playerContainer}>
           <Text style={styles.title}>Méditation {type}</Text>
@@ -119,22 +146,58 @@ export default function MeditationPlayer({ route, navigation }) {
             {duration} minutes - {mode}
           </Text>
 
+          {/* Barre de progression */}
+          <View style={styles.progressContainer}>
+            <View style={styles.progressBarBackground}>
+              <View
+                style={[
+                  styles.progressBarFill,
+                  { width: `${progress * 100}%` },
+                ]}
+              />
+            </View>
+            {/* Time restant et écoulé + formattage*/}
+            <View style={styles.timeRow}>
+              <Text style={styles.timeText}>{formatTime(ecoule)}</Text>
+              <Text style={styles.timeText}>{formatTime(total)}</Text>
+            </View>
+          </View>
+          {/* Bouton Play/Pause */}
           <Pressable style={styles.playPause} onPress={togglePlayPause}>
-            <Text style={styles.playPauseText}>
-              {isPlaying ? "Pause" : "Play"}
-            </Text>
+            {isPlaying ? (
+              <Ionicons name="pause-circle" size={80} color="#eaeaeaff" />
+            ) : (
+              <Ionicons name="play-circle" size={80} color="#eaeaeaff" />
+            )}
           </Pressable>
         </View>
       )}
-      <Button type="back" onPress={stopMeditation} />
 
-      {/* Ajouter un bouton "suivant" lorsque la méditation est finie, qui aille vers les étagères */}
-      {/* <Button
-    onPress={() => navigation.navigate("Shelves")}
-    label="Retour Etagère"
-    type="primary"
-    /> */}
+      {/* <Button type="back" onPress={stopMeditation} /> */}
+      <Button
+        type="back"
+        style={styles.backBtn}
+        onPress={() => setShowExitPopup(true)}
+      />
 
+      {/* Modale confirmation voulez vous arrêter? */}
+      <ConfirmModal
+        visible={showExitPopup}
+        message="Voulez-vous arrêter la méditation ?"
+        onCancel={() => setShowExitPopup(false)}
+        onConfirm={stopMeditation}
+      />
+
+      {/* Modale de congratulations à la fin de la méditation */}
+      <ConfirmModal
+        visible={showCongrats}
+        message="Bravo ! Tu as terminé ta méditation"
+        onCancel={() => setShowCongrats(false)}
+        onConfirm={() => {
+          setShowCongrats(false);
+          navigation.navigate("Shelves");
+        }}
+      />
     </ImageBackground>
   );
 }
@@ -161,18 +224,46 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#EEE",
   },
-
-  playPause: {
-    backgroundColor: "white",
-    paddingVertical: 14,
-    paddingHorizontal: 30,
-    borderRadius: 20,
-    marginTop: 40,
+  // Progressbar et durée
+  progressContainer: {
+    width: "80%",
+    alignSelf: "center",
+    marginTop: 20,
   },
 
-  playPauseText: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#224C4A",
+  progressBarBackground: {
+    height: 8,
+    backgroundColor: "#ffffff55",
+    borderRadius: 4,
+    overflow: "hidden",
+  },
+
+  progressBarFill: {
+    height: "100%",
+    backgroundColor: "#fff",
+  },
+
+  timeRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 6,
+  },
+
+  timeText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "500",
+    letterSpacing: 0.5,
+  },
+
+  playPauseIcon: {
+    fontSize: 42,
+    color: "#507C79",
+  },
+  backBtn: {
+    position: "absolute",
+    bottom: 60,
+    left: 40,
+    zIndex: 20,
   },
 });
