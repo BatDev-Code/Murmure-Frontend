@@ -106,7 +106,6 @@ export default function MeditationHomeScreen({ navigation }) {
         {/* Bouton démarrage */}
         <View style={styles.footer}>
           <Button
-            // onPress={() => navigation.navigate("MeditationPlayer")}
             onPress={startMeditation}
             label="Démarrer méditation"
             type="primary"
