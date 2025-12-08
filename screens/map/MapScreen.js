@@ -10,7 +10,8 @@ export default function MapScreen({ navigation }) {
       <Text style={styles.subtitle}>Ecran Map</Text>
 
       {/* Labels vers Meditations, respirations, chat */}
-      <Label onPress={() => navigation.navigate("lesson")}>Chapitre 1</Label>
+      <Label onPress={() => navigation.navigate("lesson")}>Chapitre 0</Label>
+      <Label onPress={() => navigation.navigate("lesson", { lessonNumber: 1 })}>Chapitre 1</Label>
 
       {/* Bouton Précédent */}
       <Button onPress={() => navigation.goBack()} type="back" />
