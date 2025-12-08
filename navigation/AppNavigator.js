@@ -5,6 +5,13 @@ import HomeScreen from "../screens/home/HomeScreen";
 
 import ShelvesScreen from "../screens/shelves/ShelvesScreen";
 
+import MapScreen from "../screens/map/MapScreen";
+
+//lessons
+import LessonScreen from "../screens/lessons/LessonScreen";
+import QuizzScreen from "../screens/lessons/QuizzScreen";
+import FlashcardScreen from "../screens/lessons/FlashcardScreen";
+
 // Meditations
 import MeditationHomeScreen from "../screens/meditations/MeditationHomeScreen";
 import MeditationPlayerScreen from "../screens/meditations/MeditationPlayerScreen";
@@ -34,22 +41,21 @@ export default function AppNavigator() {
       {/* Shelves (étagère) */}
       <Stack.Screen name="Shelves" component={ShelvesScreen} />
 
+      {/* Map */}
+      <Stack.Screen name="Map" component={MapScreen} />
+
+      {/* lesson */}
+      <Stack.Screen name="lesson" component={LessonScreen} />
+      <Stack.Screen name="quizz" component={QuizzScreen} />
+      <Stack.Screen name="flashcard" component={FlashcardScreen} />
+
       {/* Meditation */}
-      <Stack.Screen
-        name="MeditationHome"
-        component={MeditationHomeScreen}
-      />
+      <Stack.Screen name="MeditationHome" component={MeditationHomeScreen} />
       <Stack.Screen name="MeditationPlayer" component={MeditationPlayerScreen} />
 
       {/* Respiration */}
-      <Stack.Screen
-        name="RespirationHome"
-        component={RespirationHomeScreen}
-      />
-      <Stack.Screen
-        name="RespirationCountdown"
-        component={RespirationCountdownScreen}
-      />
+      <Stack.Screen name="RespirationHome" component={RespirationHomeScreen} />
+      <Stack.Screen name="RespirationCountdown" component={RespirationCountdownScreen} />
 
       {/* Chat */}
       <Stack.Screen name="Chat" component={ChatScreen} />

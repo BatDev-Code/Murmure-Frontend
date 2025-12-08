@@ -9,12 +9,12 @@ export default function HomeScreen({ navigation }) {
       <Text style={styles.subtitle}>Ecran Home (placeholder)</Text>
 
       {/* Lien vers l'étagère */}
-      <Label
-        onPress={() => navigation.navigate("Shelves")}
-        children="Etagère"
-             />
+      <Label onPress={() => navigation.navigate("Shelves")} children="Etagère" />
 
-      {/* Ici ajouter le lien vers la map, et vers auth */}
+      {/* Lien vers la map */}
+      <Label onPress={() => navigation.navigate("Map")} children="Carte" />
+
+      {/* Ici ajouter lien vers mon compte */}
     </View>
   );
 }
