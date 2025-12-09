@@ -1,40 +1,248 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useRef } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ImageBackground,
+  Pressable,
+} from "react-native";
 import Button from "../../components/Button";
 
-export default function RespirationCountdownScreen({ navigation }) {
+import ConfirmModal from "../../components/ConfirmModal";
+import { useState, useEffect } from "react";
+import { Animated } from "react-native";
+// import * as Haptics from 'expo-haptics';
+
+const COLORS = {
+  dark: "#433c35ff",
+};
+
+export default function RespirationCountdownScreen({ route, navigation }) {
+  const { duration } = route.params;
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [ecoule, setEcoule] = useState(0); //valeur incrémentée par le setInterval
+  const totalDuration = duration * 60; //secondes totales (car en min)
+  const [showExitPopup, setShowExitPopup] = useState(false); // popup sortie
+  const [phase, setPhase] = useState("inspire"); //phases inspire/expire
+
+  // state de congrats
+  const [showCongrats, setShowCongrats] = useState(false);
+
+  //   Animation cercle= définition du cercleAnim
+//   const opacityAnim = useRef(new Animated.Value(1)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  // Timer global (idem méditation solo)
+  useEffect(() => {
+    let interval;
+
+    if (isPlaying) {
+      interval = setInterval(() => {
+        setEcoule((prev) => {
+          if (prev >= totalDuration) {
+            clearInterval(interval);
+            setIsPlaying(false);
+            setShowCongrats(true); //Affichera la modal congratulations
+            return totalDuration; //ecoule à la valeur max
+          }
+          return prev + 1;
+        });
+      }, 1000); //tts les 1 sec
+    }
+
+    return () => clearInterval(interval);
+  }, [isPlaying]);
+
+  // Alternance phases inspire/expire
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    let cycle = setInterval(() => {
+      setPhase((prev) => (prev === "inspire" ? "expire" : "inspire"));
+    }, 5000); //ttes les 5 secs : Inspire 5 secondes / Expire 5 secondes
+    // console.log(phase);
+    return () => clearInterval(cycle);
+  }, [isPlaying]);
+
+  // UseEffect qui lance l'animation au changement de la phase + isPlaying
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    animateBreathing(phase);
+  }, [phase, isPlaying]);
+
+  // Animation https://reactnative.dev/docs/animated
+  const animateBreathing = (phase) => {
+    Animated.timing(scaleAnim, {
+      toValue: phase === "inspire" ? 1.8 : 0.8, //valeur renvoyée
+      duration: 5000, //ttes les 5 secs
+      useNativeDriver: true,
+    }).start();
+
+    // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+  };
+
+  function formatTime(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s < 10 ? "0" : ""}${s}`;
+  }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Bienvenue dans Respiration</Text>
-      <Text style={styles.subtitle}>Ecran RespirationCountdownScreen</Text>
+    <ImageBackground
+      source={require("../../assets/respiration/respirationBkg.png")}
+      style={styles.container}
+    >
+      <View style={styles.innerGlobal}>
+        <Text style={styles.title}>Respiration</Text>
+        <Text style={styles.subtitle}>{duration} minutes</Text>
 
-      {/* Bouton Suivant */}
-      <Button
-        onPress={() => navigation.navigate("Shelves")}
-        label="Retour Etagère"
-        type="primary"
-      />
+        {/* Timer */}
+        <Text style={styles.timer}>{formatTime(totalDuration - ecoule)}</Text>
 
-      {/* Bouton Précédent */}
-      <Button onPress={() => navigation.goBack()} type="back" />
-    </View>
+        {/* animation*/}
+        <Animated.View
+          style={[styles.circle, { transform: [{ scale: scaleAnim }] }]}
+        >
+          <Text style={styles.phaseText}>
+            {phase === "inspire" ? "Inspire" : "Expire"}
+          </Text>
+        </Animated.View>
+
+        {/* Progress bar */}
+        <View style={styles.progressBarBackground}>
+          <View
+            style={[
+              styles.progressBarFill,
+              { width: `${(ecoule / totalDuration) * 100}%` },
+            ]}
+          />
+        </View>
+
+        {/* Bouton Play/pause */}
+        {!isPlaying ? (
+          <Pressable style={styles.playBtn} onPress={() => setIsPlaying(true)}>
+            <Text style={styles.playText}>Commencer</Text>
+          </Pressable>
+        ) : (
+          <Pressable style={styles.playBtn} onPress={() => setIsPlaying(false)}>
+            <Text style={styles.playText}>Pause</Text>
+          </Pressable>
+        )}
+
+        {/* Bouton retour */}
+        <Button
+          type="back"
+          style={styles.backBtn}
+          onPress={() => setShowExitPopup(true)}
+        />
+
+        {/* Modale sortie avant la fin*/}
+        <ConfirmModal
+          visible={showExitPopup}
+          message="Arrêter la respiration ?"
+          onCancel={() => setShowExitPopup(false)}
+          onConfirm={() => {
+            setShowExitPopup(false);
+            navigation.goBack();
+          }}
+        />
+
+        {/* Modale congrats à la fin*/}
+        <ConfirmModal
+          visible={showCongrats}
+          singleButton
+          message="Bravo ! Respiration terminée"
+          onConfirm={() => {
+            setShowCongrats(false);
+            navigation.navigate("Shelves");
+          }}
+        />
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
+    resizeMode: "cover",
+  },
+
+  innerGlobal: {
+    flex: 1,
     justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 20,
+    paddingTop: 40,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "600",
-    marginBottom: 10,
+    fontSize: 26,
+    fontWeight: "700",
+    color: COLORS.dark,
   },
+
   subtitle: {
-    fontSize: 16,
-    color: "#666",
+    fontSize: 18,
+    color: COLORS.dark,
+  },
+  circle: {
+    width: 180,
+    height: 180,
+    borderRadius: 180,
+    backgroundColor: "rgba(255,255,255,0.3)",
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 40,
+  },
+
+  phaseText: {
+    color: COLORS.dark,
+    fontSize: 26,
+    fontWeight: "700",
+    letterSpacing: 1.5,
+  },
+
+  timer: {
+    color: COLORS.dark,
+    fontSize: 48,
+    fontWeight: "700",
+    marginTop: 20,
+  },
+
+  progressBarBackground: {
+    width: "80%",
+    height: 8,
+    backgroundColor: "#ffffff55",
+    borderRadius: 4,
+    overflow: "hidden",
+    marginTop: 10,
+    marginBottom: 30,
+  },
+
+  progressBarFill: {
+    height: "100%",
+    backgroundColor: COLORS.dark,
+  },
+
+  playBtn: {
+    backgroundColor: "#fff",
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 20,
+    marginTop: 20,
+  },
+
+  playText: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#224C4A",
+  },
+
+  backBtn: {
+    position: "absolute",
+    bottom: 60,
+    left: 40,
+    zIndex: 20,
   },
 });

@@ -26,7 +26,7 @@ export default function MeditationPlayer({ route, navigation }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // states en lien avec la barre de progression
+  // states en lien avec la barre de progression Meditations Guidees
   const [position, setPosition] = useState(0); // en ms
   const [durationMs, setDurationMs] = useState(1); // en ms (éviter division par 0)
   const [showExitPopup, setShowExitPopup] = useState(false); // popup sortie
@@ -34,6 +34,13 @@ export default function MeditationPlayer({ route, navigation }) {
   // state de congrats
   const [showCongrats, setShowCongrats] = useState(false);
 
+  // states du player solo
+  const [ecouleSolo, setEcouleSolo] = useState(0); //valeur incrémentée par le setInterval
+  const totalSoloDuration = duration * 60; //secondes totales (car en min)
+  const progressSolo = ecouleSolo / totalSoloDuration;
+  const [isSoloPlaying, setIsSoloPlaying] = useState(false);
+
+  // UseEffect du player méditation guidée, fetch au lancement du screen
   useEffect(() => {
     fetch(`${BACKEND_ADDRESS}/meditation`, {
       method: "POST",
@@ -49,6 +56,7 @@ export default function MeditationPlayer({ route, navigation }) {
         // Si tout est ok, on met à jour le state avec l'url renvoyé par le backend
         setAudioUrl(data.audioUrl);
 
+        //pour plus tard si possible: gérer le mode silencieux, à creuser:
         // await Audio.setAudioModeAsync({
         //   playsInSilentModeIOS: true,
         //   allowsRecordingIOS: false,
@@ -81,6 +89,29 @@ export default function MeditationPlayer({ route, navigation }) {
         setLoading(false);
       });
   }, []);
+
+  // UseEffect du mode solo (timer qui défile)
+  useEffect(() => {
+    let interval;
+
+    if (mode === "solo" && isSoloPlaying) {
+      interval = setInterval(() => {
+        setEcouleSolo((prev) => {
+          if (prev >= totalSoloDuration) {
+            clearInterval(interval);
+            setIsSoloPlaying(false);
+            setShowCongrats(true); //Affichera la modal congratulations
+            return totalSoloDuration; //ecouleSolo à la valeur max
+          }
+          return prev + 1;
+        });
+      }, 1000); //tts les 1 sec
+    }
+
+    return () => clearInterval(interval);
+  }, [isSoloPlaying, mode]);
+
+  // MEDITATIONS GUIDEES
 
   // calcul de la progression en fonction du status (sound)
   const progress = position / durationMs; // entre 0 et 1
@@ -132,14 +163,31 @@ export default function MeditationPlayer({ route, navigation }) {
     navigation.goBack();
   };
 
+  // MEDITATION SOLO
+  //Démarrage du solo
+  const startSolo = () => {
+    setEcouleSolo(0);
+    setIsSoloPlaying(true);
+  };
+
+  // Stop méditation solo
+  const stopMeditationSolo = () => {
+    setIsSoloPlaying(false);
+    navigation.goBack();
+  };
+
   return (
     <ImageBackground
       source={require("../../assets/meditation/meditationBkg.png")}
       style={styles.container}
     >
-      {loading ? (
+      {/* Loader activityIndicator pour mes méditations guidées */}
+      {loading && mode === "guidee" && (
         <ActivityIndicator size="large" color="#fff" /> //chargement:rond qui tourne
-      ) : (
+      )}
+
+      {/* Player pour méditations guidées */}
+      {mode === "guidee" && !loading && (
         <View style={styles.playerContainer}>
           <Text style={styles.title}>Méditation {type}</Text>
           <Text style={styles.subtitle}>
@@ -173,6 +221,52 @@ export default function MeditationPlayer({ route, navigation }) {
         </View>
       )}
 
+      {/* Player pour méditations solo */}
+
+      {mode === "solo" && (
+        <View style={styles.playerContainer}>
+          <Text style={styles.title}>Méditation solo</Text>
+          <Text style={styles.subtitle}>{duration} minutes</Text>
+
+          {/* Timer */}
+          <Text style={styles.timerSoloText}>
+            {formatTime(totalSoloDuration - ecouleSolo)}
+          </Text>
+
+          {/* Progressbar Solo */}
+          <View style={styles.progressSoloContainer}>
+            <View
+              style={[
+                styles.progressSoloBar,
+                { width: `${progressSolo * 100}%` },
+              ]}
+            />
+          </View>
+
+          {!isPlaying ? (
+            <Pressable
+              style={styles.playPause}
+              onPress={
+                isSoloPlaying ? () => setIsSoloPlaying(false) : startSolo
+              }
+            >
+              {isSoloPlaying ? (
+                <Ionicons name="pause-circle" size={80} color="#eaeaeaff" />
+              ) : (
+                <Ionicons name="play-circle" size={80} color="#eaeaeaff" />
+              )}
+            </Pressable>
+          ) : (
+            <Pressable
+              style={styles.playPause}
+              onPress={() => setIsPlaying(false)}
+            >
+              <Text style={styles.playPauseText}>Pause</Text>
+            </Pressable>
+          )}
+        </View>
+      )}
+
       {/* <Button type="back" onPress={stopMeditation} /> */}
       <Button
         type="back"
@@ -185,14 +279,14 @@ export default function MeditationPlayer({ route, navigation }) {
         visible={showExitPopup}
         message="Voulez-vous arrêter la méditation ?"
         onCancel={() => setShowExitPopup(false)}
-        onConfirm={stopMeditation}
+        onConfirm={mode === "solo" ? stopMeditationSolo : stopMeditation}
       />
 
-      {/* Modale de congratulations à la fin de la méditation */}
+      {/* Modale de congratulations 1 seul bouton à la fin de la méditation */}
       <ConfirmModal
         visible={showCongrats}
         message="Bravo ! Tu as terminé ta méditation"
-        onCancel={() => setShowCongrats(false)}
+        singleButton={true} //1 seul bouton
         onConfirm={() => {
           setShowCongrats(false);
           navigation.navigate("Shelves");
@@ -254,6 +348,32 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
     letterSpacing: 0.5,
+  },
+  // Meditation solo
+
+  progressSoloContainer: {
+    width: "80%",
+    height: 8,
+    backgroundColor: "#ffffff55",
+    borderRadius: 4,
+    overflow: "hidden",
+    marginTop: 10,
+    marginBottom: 30,
+  },
+  timerSoloText: {
+    fontSize: 48,
+    fontWeight: "700",
+    color: "#FFF",
+    marginTop: 40,
+    marginBottom: 20,
+    letterSpacing: 2,
+    textShadowColor: "rgba(0,0,0,0.3)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  progressSoloBar: {
+    height: "100%",
+    backgroundColor: "#fff",
   },
 
   playPauseIcon: {
