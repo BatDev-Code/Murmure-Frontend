@@ -23,7 +23,7 @@ export default function WelcomeScreen({ navigation }) {
           // --->  Ajoutez toutes vos autres images ici pour le prechargement <---
           require('../../assets/paysage-bienvenue.png'),
           require('../../assets/homescreen.png'),
-
+          
         ]);
         
         // Garde le splash visible 2 secondes supplémentaires
@@ -56,6 +56,8 @@ export default function WelcomeScreen({ navigation }) {
     return null; // Le splash screen natif reste visible
   }
 
+
+
   return (
     <ImageBackground 
       style={styles.background}
@@ -64,6 +66,7 @@ export default function WelcomeScreen({ navigation }) {
     >
       <View style={styles.texte}>
         <Text style={styles.title}>Bienvenue dans Murmure</Text>
+    
       </View> 
     </ImageBackground>
   )

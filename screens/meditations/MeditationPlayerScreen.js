@@ -13,7 +13,7 @@ import Button from "../../components/Button";
 // Doc audio: https://docs.expo.dev/versions/latest/sdk/av/
 
 
-import { BACKEND_ADDRESS } from "../../config";
+// import { BACKEND_ADDRESS } from "../../config";
 
 export default function MeditationPlayer({ route, navigation }) {
   // Params passés par l'écran MeditationHomeScreen
