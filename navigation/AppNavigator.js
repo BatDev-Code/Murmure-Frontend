@@ -44,7 +44,7 @@ export default function AppNavigator() {
       {/* Page de bienvenue paysage */}
       <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
 
-      {/* Home et loading */}
+{     /* Home et loading */}
       <Stack.Screen name="Home" component={HomeScreen} />
 
       {/* Shelves (étagère) */}
