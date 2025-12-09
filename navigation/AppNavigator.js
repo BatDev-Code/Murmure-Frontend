@@ -1,6 +1,8 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 // Import screens
+import WelcomeScreen from "../screens/home/WelcomeScreen";
+
 import HomeScreen from "../screens/home/HomeScreen";
 
 import ShelvesScreen from "../screens/shelves/ShelvesScreen";
@@ -25,14 +27,19 @@ import ChatScreen from "../screens/chat/ChatScreen";
 
 // Importer tous les screens : auth,lessons, loading, etc...
 
+// Use different Stack navigators for web and native platforms
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="Home" //Ici chacun met le nom de son screen, comme ça qd on lance expoGo on arrive dessus. A la fin, on mettre "Home"
+      initialRouteName="WelcomeScreen" //Ici chacun met le nom de son screen, comme ça qd on lance expoGo on arrive dessus. A la fin, on mettre "Home"
+
       screenOptions={{ headerShown: false }}
     >
+      {/* Page de bienvenue paysage */}
+      <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+
       {/* Home et loading */}
       <Stack.Screen name="Home" component={HomeScreen} />
 
