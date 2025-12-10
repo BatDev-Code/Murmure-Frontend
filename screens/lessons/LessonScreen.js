@@ -13,6 +13,7 @@ export default function LessonScreen({ navigation, route }) {
   const [quizzQuestionChoice, setQuizzQuestionChoice] = useState([]);
 
   const [showExitPopup, setShowExitPopup] = useState(false); // popup sortie
+  const [exitBehavior, setExitBehavior] = useState();
 
   const chapters = [
     {
@@ -157,18 +158,17 @@ export default function LessonScreen({ navigation, route }) {
         navigation.navigate("Map");
         break;
     }
-
-    // contentToDisplay === "lesson"
-    //   ? setContentToDisplay("quizz")
-    //   : contentToDisplay === "quizzResult"
-    //   ? setContentToDisplay("flashcard")
-    //   : setContentToDisplay("quizz");
   }
 
   return (
     <View style={styles.mainContainer}>
       {/* Top + marginTop dynamic en fonction de l'inset.top */}
-      <Label onPress={() => navigation.navigate("Quizz")} style={[styles.coco, { top: Math.max(insets.top, 20) }]}>
+      <Label
+        onPress={() => {
+          setExitBehavior(() => () => navigation.pop(2));
+          setShowExitPopup(true);
+        }}
+        style={[styles.coco, { top: Math.max(insets.top, 20) }]}>
         <Image source={require("../../assets/coco.png")} />
       </Label>
       <View style={[styles.contentContainer, { marginTop: Math.max(insets.top + 120, 20) }]}>
@@ -188,15 +188,32 @@ export default function LessonScreen({ navigation, route }) {
 
       {/* marginBottom dynamic en fonction de l'inset.bottom */}
       <View style={[styles.buttonContainer, { marginBottom: 20 + insets.bottom }]}>
-        <Button onPress={() => navigation.goBack()} type="primary" label="Quitter" />
-        {contentToDisplay !== "quizz" && <Button onPress={() => handleNextButton()} type="primary" label="Suivant" />}
+        <Button
+          style={{ width: 110 }}
+          onPress={() => {
+            setExitBehavior(() => () => navigation.goBack());
+            setShowExitPopup(true);
+          }}
+          type="primary"
+          label="Quitter"
+        />
+        {contentToDisplay !== "quizz" ? (
+          <Button
+            style={{ width: 110 }}
+            onPress={() => handleNextButton()}
+            type="primary"
+            label="Suivant"
+          />
+        ) : (
+          <Button style={{ backgroundColor: "", width: 110 }} />
+        )}
       </View>
 
       <ConfirmModal
         visible={showExitPopup}
         message="Voulez-vous arrêter la leçon ?"
         onCancel={() => setShowExitPopup(false)}
-        onConfirm={() => navigation.goBack()}
+        onConfirm={() => exitBehavior()}
       />
     </View>
   );
@@ -218,12 +235,12 @@ const styles = StyleSheet.create({
     zIndex: 2, // This define the priority of the image (2 > 1 so image is in front of contentContainer)
   },
   contentContainer: {
-    flex: 1, // Donne tout la hauteur restante au contenu (apres le margin top pour coco et le )
+    flex: 1, // Donne tout la hauteur restante au contenu (apres le marginTop ici et le margin du buttonContainer )
     marginTop: 140,
+    marginBottom: 0,
     backgroundColor: "white",
     borderRadius: 20,
     margin: 20,
-    marginBottom: 0,
     padding: 20,
     zIndex: 1,
   },

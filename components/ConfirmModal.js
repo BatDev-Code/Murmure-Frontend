@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     alignItems: "center",
+    zIndex: 10, // Needed for the modal to be shown in front of anything else 
   },
   box: {
     width: "80%",

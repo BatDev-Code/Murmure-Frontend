@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#507C79",
     marginVertical: 6,
     marginHorizontal: 4,
+    alignItems: "center",
   },
   questionButton: {
     paddingVertical: 12,
@@ -38,6 +39,7 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     marginHorizontal: 4,
     color: "black",
+    alignItems: "center",
   },
   primaryText: {
     color: "white",
