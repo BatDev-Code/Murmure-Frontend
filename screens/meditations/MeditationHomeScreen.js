@@ -57,14 +57,14 @@ export default function MeditationHomeScreen({ navigation }) {
         <View style={styles.body}>
           {/* Choix du type de méditation */}
           <Text style={styles.label}>Type de méditation</Text>
-          <View style={styles.dropdown}>
+          <View style={styles.choices}>
             {meditationTypes.map((item) => (
               <Pressable
                 key={item.value}
                 onPress={() => setType(item.value)}
                 style={[
-                  styles.dropdownItem,
-                  type === item.value && styles.dropdownSelected,
+                  styles.choicesItem,
+                  type === item.value && styles.choicesSelected,
                 ]}
               >
                 <Text>{item.label}</Text>
@@ -97,7 +97,7 @@ export default function MeditationHomeScreen({ navigation }) {
 
           {/* Choix de la durée avec composant de type Slider */}
           <DurationSelector
-            mode={mode} 
+            mode={mode}
             value={duration} // valeur actuelle
             onChange={(value) => setDuration(value)} //permet de savoir
           />
@@ -114,7 +114,7 @@ export default function MeditationHomeScreen({ navigation }) {
 
           {/* Bouton Précédent */}
           <Button
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.navigate("Shelves")}
             type="back"
             style={styles.backButton}
           />
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
 
-  // header
+  // header perroquet
   header: {
     paddingTop: 40,
     paddingBottom: 10,
@@ -183,15 +183,15 @@ const styles = StyleSheet.create({
     color: "#224C4A",
     marginBottom: 10,
   },
-
-  dropdown: {
+  // boutons/labels choix row
+  choices: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 10,
     marginBottom: 20,
   },
 
-  dropdownItem: {
+  choicesItem: {
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: 10,
@@ -200,11 +200,11 @@ const styles = StyleSheet.create({
     borderColor: "#D0D0D0",
   },
 
-  dropdownSelected: {
+  choicesSelected: {
     borderColor: "#507C79",
     backgroundColor: "#E3F2F1",
   },
-
+  // bouton segmenté
   segment: {
     flexDirection: "row",
     marginBottom: 25,
@@ -241,8 +241,9 @@ const styles = StyleSheet.create({
 
   startButton: {
     alignSelf: "center",
-    width: "60%",
-    marginBottom: 30,
+    width: "80%",
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   backButton: {
