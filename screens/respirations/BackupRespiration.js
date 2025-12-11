@@ -12,8 +12,6 @@ import ConfirmModal from "../../components/ConfirmModal";
 import { useState, useEffect } from "react";
 import { Animated } from "react-native";
 import * as Haptics from "expo-haptics";
-import { Asset } from "expo-asset";//Chargement de l'image 
-
 
 const COLORS = {
   dark: "#433c35ff",
@@ -75,10 +73,6 @@ export default function RespirationCountdownScreen({ route, navigation }) {
   useEffect(() => {
     if (!isPlaying) return;
 
-    // Démarre immédiatement l'animation et les haptics pour la phase actuelle
-    animateBreathing(phase);
-    startHaptics(phase);
-
     let cycle = setInterval(() => {
       setPhase((prev) => (prev === "inspire" ? "expire" : "inspire"));
     }, 5000); //ttes les 5 secs : Inspire 5 secondes / Expire 5 secondes
@@ -86,13 +80,12 @@ export default function RespirationCountdownScreen({ route, navigation }) {
     return () => clearInterval(cycle);
   }, [isPlaying]);
 
-  // // UseEffect qui lance l'animation au changement de la phase + isPlaying
+  // UseEffect qui lance l'animation au changement de la phase + isPlaying
   useEffect(() => {
     if (!isPlaying) return;
 
     animateBreathing(phase);
-    startHaptics(phase);
-  }, [phase]);
+  }, [phase, isPlaying]);
 
   // Animation https://reactnative.dev/docs/animated
   const animateBreathing = (phase) => {
@@ -106,13 +99,14 @@ export default function RespirationCountdownScreen({ route, navigation }) {
   // VIBRATIONS-----------------------------------
   // Haptics - Vibrations inspire/expire
 
-  // Fonction pour démarrer les haptics selon la phase
-  const startHaptics = (currentPhase) => {
+  useEffect(() => {
+    if (!isPlaying) return;
+
     cleanVibrations(); // on nettoie avant de relancer
 
     // Rythme et intensité
-    //  Inspiration
-    const inspirePattern = [
+    const pattern = [
+      //  Inspiration
       { delay: 0, style: Haptics.ImpactFeedbackStyle.Light },
       { delay: 100, style: Haptics.ImpactFeedbackStyle.Light },
       { delay: 200, style: Haptics.ImpactFeedbackStyle.Light },
@@ -127,26 +121,24 @@ export default function RespirationCountdownScreen({ route, navigation }) {
       { delay: 2200, style: Haptics.ImpactFeedbackStyle.Heavy },
       { delay: 2600, style: Haptics.ImpactFeedbackStyle.Heavy },
       { delay: 2900, style: Haptics.ImpactFeedbackStyle.Heavy },
-    ];
 
-    const expirePattern = [
       //Expiration
-      { delay: 0, style: Haptics.ImpactFeedbackStyle.Heavy },
-      { delay: 500, style: Haptics.ImpactFeedbackStyle.Heavy },
-      { delay: 1000, style: Haptics.ImpactFeedbackStyle.Heavy },
-      { delay: 1500, style: Haptics.ImpactFeedbackStyle.Medium },
-      { delay: 2000, style: Haptics.ImpactFeedbackStyle.Medium },
-      { delay: 2500, style: Haptics.ImpactFeedbackStyle.Medium },
-      { delay: 3000, style: Haptics.ImpactFeedbackStyle.Light },
-      { delay: 3500, style: Haptics.ImpactFeedbackStyle.Light },
-      { delay: 4000, style: Haptics.ImpactFeedbackStyle.Light },
-      { delay: 4500, style: Haptics.ImpactFeedbackStyle.Light },
+      { delay: 5000 + 0, style: Haptics.ImpactFeedbackStyle.Heavy },
+      { delay: 5000 + 100, style: Haptics.ImpactFeedbackStyle.Heavy },
+      { delay: 5000 + 200, style: Haptics.ImpactFeedbackStyle.Heavy },
+      { delay: 5000 + 300, style: Haptics.ImpactFeedbackStyle.Heavy },
+      { delay: 5000 + 400, style: Haptics.ImpactFeedbackStyle.Heavy },
+      { delay: 5000 + 600, style: Haptics.ImpactFeedbackStyle.Medium },
+      { delay: 5000 + 800, style: Haptics.ImpactFeedbackStyle.Medium },
+      { delay: 5000 + 900, style: Haptics.ImpactFeedbackStyle.Medium },
+      { delay: 5000 + 1200, style: Haptics.ImpactFeedbackStyle.Medium },
+      { delay: 5000 + 1500, style: Haptics.ImpactFeedbackStyle.Light },
+      { delay: 5000 + 1800, style: Haptics.ImpactFeedbackStyle.Light },
+      { delay: 5000 + 2200, style: Haptics.ImpactFeedbackStyle.Light },
+      { delay: 5000 + 2600, style: Haptics.ImpactFeedbackStyle.Light },
+      { delay: 5000 + 2900, style: Haptics.ImpactFeedbackStyle.Light },
     ];
 
-    // Choix du pattern selon la phase
-    const pattern = currentPhase === "inspire" ? inspirePattern : expirePattern;
-
-    // Lancement des haptics
     pattern.forEach((step) => {
       const id = setTimeout(() => {
         // si on a fait pause on arrête
@@ -155,10 +147,11 @@ export default function RespirationCountdownScreen({ route, navigation }) {
         }
       }, step.delay);
 
-      // chaque timeout est stocké
+      // chaque timeout doit être stocké
       timeoutsVibrations.current.push(id);
     });
-  };
+    return () => cleanVibrations();
+  }, [phase, isPlaying]);
 
   function formatTime(seconds) {
     const m = Math.floor(seconds / 60);
@@ -167,14 +160,9 @@ export default function RespirationCountdownScreen({ route, navigation }) {
   }
 
   function stopRespiration() {
+   
     setIsPlaying(false);
     cleanVibrations();
-    // On remet le cercle à sa taille initiale
-    Animated.timing(scaleAnim, {
-      toValue: 1,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
   }
 
   return (
@@ -211,11 +199,11 @@ export default function RespirationCountdownScreen({ route, navigation }) {
         {/* Bouton Play/pause */}
         {!isPlaying ? (
           <Pressable style={styles.playBtn} onPress={() => setIsPlaying(true)}>
-            <Text style={styles.playText}>Démarrer</Text>
+            <Text style={styles.playText}>Commencer</Text>
           </Pressable>
         ) : (
           <Pressable style={styles.playBtn} onPress={() => stopRespiration()}>
-            <Text style={styles.playText}>Arrêter</Text>
+            <Text style={styles.playText}>Stop</Text>
           </Pressable>
         )}
 
@@ -225,7 +213,7 @@ export default function RespirationCountdownScreen({ route, navigation }) {
           style={styles.backBtn}
           onPress={() => {
             if (isPlaying) {
-              return setShowExitPopup(true);
+             return setShowExitPopup(true);
             }
             navigation.goBack();
           }}
