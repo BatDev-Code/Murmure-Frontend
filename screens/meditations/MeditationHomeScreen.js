@@ -11,22 +11,22 @@ import Button from "../../components/Button";
 import { useState } from "react";
 
 export default function MeditationHomeScreen({ navigation }) {
-  // Récupération des states: type de méditation, mode (guidée ou solo), duration
-  const [type, setType] = useState("anxiete");
+  // Récupération des states: theme de méditation, mode (guidée ou solo), duration
+  const [theme, setTheme] = useState("anxiete");
   const [mode, setMode] = useState("guidee");
   const [duration, setDuration] = useState(5);
-  // console.log("type:", type, "mode:", mode, "duration:", duration);
+  // console.log("theme:", theme, "mode:", mode, "duration:", duration);
 
-  const meditationTypes = [
+  const meditationThemes = [
     { label: "Anxiété", value: "anxiete" },
     { label: "Sommeil", value: "sommeil" },
     { label: "Détente", value: "detente" },
   ];
 
-  // Fonction qui ouvre le screenMeditationPlayer en lui passant des params : type,mode,duration, qui seront des req.params
+  // Fonction qui ouvre le screenMeditationPlayer en lui passant des params : theme,mode,duration, qui seront des req.params
   const startMeditation = () => {
     navigation.navigate("MeditationPlayer", {
-      type,
+      theme,
       mode,
       duration,
     });
@@ -55,16 +55,16 @@ export default function MeditationHomeScreen({ navigation }) {
         </View>
 
         <View style={styles.body}>
-          {/* Choix du type de méditation */}
-          <Text style={styles.label}>Type de méditation</Text>
+          {/* Choix du thème de méditation */}
+          <Text style={styles.label}>Thème de méditation</Text>
           <View style={styles.choices}>
-            {meditationTypes.map((item) => (
+            {meditationThemes.map((item) => (
               <Pressable
                 key={item.value}
-                onPress={() => setType(item.value)}
+                onPress={() => setTheme(item.value)}
                 style={[
                   styles.choicesItem,
-                  type === item.value && styles.choicesSelected,
+                  theme === item.value && styles.choicesSelected,
                 ]}
               >
                 <Text>{item.label}</Text>
