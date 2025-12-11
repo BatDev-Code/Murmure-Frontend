@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import {
   View,
   Text,
@@ -9,11 +8,10 @@ import {
 import Button from "../../components/Button";
 
 import ConfirmModal from "../../components/ConfirmModal";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Animated } from "react-native";
 import * as Haptics from "expo-haptics";
-import { Asset } from "expo-asset";//Chargement de l'image 
-
+import { Asset } from "expo-asset"; //Chargement de l'image
 
 const COLORS = {
   dark: "#433c35ff",
@@ -21,33 +19,43 @@ const COLORS = {
 
 export default function RespirationCountdownScreen({ route, navigation }) {
   const { duration } = route.params;
+
+  const [imageLoaded, setImageLoaded] = useState(false); // state pour le chargement de l'image (trop lente sinon)
   const [isPlaying, setIsPlaying] = useState(false);
+
   const [ecoule, setEcoule] = useState(0); //valeur incrémentée par le setInterval
   const totalDuration = duration * 60; //secondes totales (car en min)
-  const [showExitPopup, setShowExitPopup] = useState(false); // popup sortie
   const [phase, setPhase] = useState("inspire"); //phases inspire/expire
 
-  // state de congrats
-  const [showCongrats, setShowCongrats] = useState(false);
+  const [showExitPopup, setShowExitPopup] = useState(false); // popup sortie
 
-  //   Animation cercle= définition du cercleAnim
-  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const [showCongrats, setShowCongrats] = useState(false); // state de congrats
 
-  // VIBRATIONS-----------------------------------
+  const scaleAnim = useRef(new Animated.Value(1)).current; //   Animation cercle= définition du cercleAnim
+  const timeoutsVibrations = useRef([]); // timeouts des haptics
 
-  // useRef stocke les timeouts des haptics, stocke valeur sans re-render
-  const timeoutsVibrations = useRef([]);
+  // PRECHARGEMENT DE L'IMAGE BACKGROUND-----------------------------------
+  useEffect(() => {
+    // Fonction pour charger l'image
+    const preloadImage = async () => {
+      try {
+        // Précharge l'image en cache
+        await Asset.fromModule(
+          require("../../assets/respiration/respirationBkg.png")
+        ).downloadAsync();
 
-  // Fonction pour nettoyer les haptics
-  const cleanVibrations = () => {
-    // on annule chaque timeout
-    timeoutsVibrations.current.forEach((id) => clearTimeout(id));
+        // Indique que l'image est chargée
+        setImageLoaded(true);
+      } catch (error) {
+        console.log("Erreur chargement image:", error);
+        // Même si erreur, affichage de l'écran
+        setImageLoaded(true);
+      }
+    };
+    preloadImage();
+  }, []);
 
-    // puis on vide
-    timeoutsVibrations.current = [];
-  };
-
-  // TIMER-----------------------------------
+  // TIMER GLOBAL -----------------------------------
 
   // Timer global (idem méditation solo)
   useEffect(() => {
@@ -68,9 +76,9 @@ export default function RespirationCountdownScreen({ route, navigation }) {
     }
 
     return () => clearInterval(interval);
-  }, [isPlaying]);
+  }, [isPlaying, totalDuration]);
 
-  // ANIMATION RESPIRE-----------------------------------
+  // PHASE + ANIMATION RESPIRE-----------------------------------
   // Alternance phases inspire/expire
   useEffect(() => {
     if (!isPlaying) return;
@@ -109,7 +117,6 @@ export default function RespirationCountdownScreen({ route, navigation }) {
   // Fonction pour démarrer les haptics selon la phase
   const startHaptics = (currentPhase) => {
     cleanVibrations(); // on nettoie avant de relancer
-
     // Rythme et intensité
     //  Inspiration
     const inspirePattern = [
@@ -160,6 +167,17 @@ export default function RespirationCountdownScreen({ route, navigation }) {
     });
   };
 
+  // Fonction pour nettoyer les haptics
+  const cleanVibrations = () => {
+    // on annule chaque timeout
+    timeoutsVibrations.current.forEach((id) => clearTimeout(id));
+
+    // puis on vide
+    timeoutsVibrations.current = [];
+  };
+
+  // AUTRES FONCTIONS UTILES----------------------
+
   function formatTime(seconds) {
     const m = Math.floor(seconds / 60);
     const s = Math.floor(seconds % 60);
@@ -177,10 +195,16 @@ export default function RespirationCountdownScreen({ route, navigation }) {
     }).start();
   }
 
+  // AFFICHAGE (préalable)--------------------
+  if (!imageLoaded) {
+    return <View style={{ flex: 1, backgroundColor: "#fff" }} />;
+  }
+
   return (
     <ImageBackground
       source={require("../../assets/respiration/respirationBkg.png")}
       style={styles.container}
+      // defaultSource={require("../../assets/respiration/respirationBkg.png")}
     >
       <View style={styles.innerGlobal}>
         <Text style={styles.title}>Respiration</Text>
@@ -269,7 +293,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingTop: 40,
+    paddingTop: 20,
   },
   title: {
     fontSize: 26,
