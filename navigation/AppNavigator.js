@@ -11,11 +11,7 @@ import ShelvesScreen from "../screens/shelves/ShelvesScreen";
 
 import MapScreen from "../screens/map/MapScreen";
 
-
-//lessons
 import LessonScreen from "../screens/lessons/LessonScreen";
-import QuizzScreen from "../screens/lessons/QuizzScreen";
-import FlashcardScreen from "../screens/lessons/FlashcardScreen";
 
 // Meditations
 import MeditationHomeScreen from "../screens/meditations/MeditationHomeScreen";
@@ -58,8 +54,6 @@ export default function AppNavigator() {
 
       {/* lesson */}
       <Stack.Screen name="Lesson" component={LessonScreen} />
-      <Stack.Screen name="Quizz" component={QuizzScreen} />
-      <Stack.Screen name="Flashcard" component={FlashcardScreen} />
 
       {/* Meditation */}
       <Stack.Screen name="MeditationHome" component={MeditationHomeScreen} />

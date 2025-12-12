@@ -1,100 +1,96 @@
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+// Necessary here ? better on app.js ?
+import { BACKEND_ADDRESS } from "../../config";
 
 import ConfirmModal from "../../components/ConfirmModal";
 import Button from "../../components/Button";
-import Label from "../../components/Label";
+import { useSelector } from "react-redux";
+
+const chaptersSafe = [
+  {
+    index: 1,
+    logo: "🌏",
+    title: "Chapitre 1: pourquoi tu n'as pas fetch les data ?",
+    content:
+      "Est ce que tu as oublié d'allumer ton back ?\nOu bien tu n'as pas lancé le script pour ajouter les datas à mongo ?\n\nℹ️ Regarde le readme sur le back 😉\n\nPour te punir voila un lorem ipsum\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam scelerisque nunc ac malesuada sollicitudin. Mauris sit amet condimentum tortor. Aliquam volutpat ornare ipsum, ac congue ligula tempus sit amet. Vestibulum pretium nunc lobortis condimentum finibus. Cras in arcu accumsan, fermentum tellus in, volutpat enim. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a consectetur lectus. Cras purus arcu, varius vel massa eu, eleifend lobortis tortor. Donec vel maximus diam, sed lacinia arcu. Sed quis nulla tempor, condimentum risus eu, varius lacus. Morbi ac iaculis lorem, at mollis ipsum. Nam in leo ante.",
+    quiz: {
+      questions: [
+        {
+          question: "Quand tu marches dehors, tu…",
+          answers: ["Oublie t'es chaussures", "Oublie la poele allumée sur le feu", "Oublie de tirer la chasse d'eau"],
+        },
+        {
+          question: "Pendant les repas, tu…",
+          answers: ["Oublie t'es chaussures", "Oublie la poele allumée sur le feu", "Oublie de tirer la chasse d'eau"],
+        },
+        {
+          question: "Quand une émotion forte arrive, tu…",
+          answers: ["Oublie t'es chaussures", "Oublie la poele allumée sur le feu", "Oublie de tirer la chasse d'eau"],
+        },
+      ],
+      results: [
+        "Tu devrai marcher pieds nu",
+        "Tu devrai souscrire à une assurance !",
+        "Va plutot aux toilettes au bureau",
+      ],
+    },
+    flashcard: {
+      title: "Qu'est ce qu'on as retenu ?",
+      definition: "🔍 bah pas grand chose\n",
+      why: "🎯 Que tu est globalement plutot douée en quiz \n",
+      keyConcept: "🧩 Et que t'oublie parfois des choses\n",
+      exemple: "⚡️ Comme le backend par exemple\n",
+      exercice: "📝 Ce message s'autodetruira dans 1312 jours !",
+    },
+  },
+];
 
 export default function LessonScreen({ navigation, route }) {
   const insets = useSafeAreaInsets(); //used to get screen SafeArea dimensions
+
+  const [chapters, setChapters] = useState([]);
+
   const [contentToDisplay, setContentToDisplay] = useState("lesson");
-  const [quizzQuestionIndex, setQuizzQuestionIndex] = useState(0);
-  const [quizzQuestionChoice, setQuizzQuestionChoice] = useState([]);
+  const [quizQuestionIndex, setQuizQuestionIndex] = useState(0);
+  const [quizQuestionChoice, setQuizQuestionChoice] = useState([]);
 
   const [showExitPopup, setShowExitPopup] = useState(false); // popup sortie
   const [exitBehavior, setExitBehavior] = useState();
 
-  const chapters = [
-    {
-      title: "Bienvenue dans la foret",
-      logo: "🌳",
-      content: `Murmure vous guide à travers un parcours immersif qui vous aide à explorer vos émotions, comprendre l’anxiété, pratiquer le lâcher-prise et vivre pleinement l’instant présent. \n
-  À chaque étape, des conseils et exercices vous accompagnent pour retrouver calme, sérénité et bien-être. \n
-  A vous de jouer !`,
-    },
-    {
-      title: "Chapitre 1: Qu'est ce que l'instant present ?",
-      titleFlash: "Flashcard: Instant Present",
-      logo: "🌏",
-      content: `L’instant présent désigne le moment que tu vis ici et maintenant, sans te perdre dans le passé ni anticiper l’avenir. \n
-  C’est ce que tu ressens, vois, entends et vis à cet instant précis. Se concentrer sur l’instant présent aide à réduire le stress et l’anxiété, car tu ne rumines plus ce qui a été ou ce qui pourrait arriver. \n
-  Vivre l’instant présent, c’est être pleinement conscient de soi et du monde autour de soi, ici et maintenant. \n
-  Es-tu vraiment dans l’instant présent ?`,
-      quizz: [
-        {
-          question: "Quand tu marches dehors, tu…",
-          answers: [
-            "Regarde ton téléphone et pense à ta to-do list",
-            "Observe un peu autour de toi, mais ton esprit vagabonde",
-            "Sens le vent, entends les sons et profites de chaque pas",
-          ],
-        },
-        {
-          question: "Pendant les repas, tu…",
-          answers: [
-            "Manges en vitesse sans vraiment prêter attention",
-            "Manges tout en réfléchissant à ce que tu dois faire après",
-            "Savoures chaque bouchée et remarques les goûts et textures",
-          ],
-        },
-        {
-          question: "Quand une émotion forte arrive, tu…",
-          answers: [
-            "La repousses ou la fuis",
-            "La remarques vaguement mais passes vite à autre chose",
-            "Tu l’accueilles, tu respires et observes ce que tu ressens",
-          ],
-        },
-      ],
-      quizzResult: [
-        "Esprit souvent ailleurs, tu as besoin d’exercices de pleine conscience.",
-        "Tu pratiques un peu, mais tu peux t’améliorer avec des micro-pauses d’attention.",
-        "Tu es déjà bien connecté à l’instant présent, continue à cultiver cette habitude !",
-      ],
-      flashcard: `🔍 Définition
-- Instant présent = ici + Maintenant
-- Pas dans le passé, ni dans le futur 
+  const [loading, setLoading] = useState(true);
 
-🎯 Pourquoi ?
-- reduis stress et ruminations
-- Plus de calme et de clarté
+  useEffect(() => {
+    setLoading(true);
+    fetch(`${BACKEND_ADDRESS}/chapters/`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.chapters && data.chapters.length > 0) {
+          console.log("✅ Data received from backend");
+          setChapters(data.chapters);
+        } else {
+          console.log("⚠️ Backend empty, loading chaptersSafe");
+          setChapters(chaptersSafe);
+        }
+      })
+      .catch((err) => {
+        console.log("❌ Fetch error, loading chaptersSafe", err);
+        setChapters(chaptersSafe);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []); 
 
-🧩 Concepts clés
-- Présence = Conscience + Attention
-- Passé / futur = pensées
-- Instant présent = expérience directe
-
-⚡️ Exemple rapide
-Tu marches → au lieu de penser à « ce que tu dois faire », tu portes attention :
-→ à la sensation des pas,
-→ au bruit autour,
-→ à ta respiration.
-
-📝 Mini-exercice (30 secondes)
-Arrête-toi 5 secondes.
-Observe 3 sensations du corps.
-Note mentalement 2 sons que tu entends.
-Inspire profondément 1 fois.
-
-→ Félicitations, tu viens de revenir à l’instant présent !`,
-    },
-    // Add more chapters as needed
-  ];
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
 
   // Use React navigation parameters. Default to 0 if route parameter not specified
   const chapterIndex = route?.params?.lessonNumber ?? 0;
-  const chapter = chapters[chapterIndex];
+  const chapter = chapters[chapterIndex] ? chapters[chapterIndex] : chapters[0];
 
   function DisplayLesson() {
     return (
@@ -110,33 +106,32 @@ Inspire profondément 1 fois.
     );
   }
 
-  function DisplayQuizz() {
+  function DisplayQuiz() {
     function handleQuestionChoice(qIndex, choice) {
-      const updatedChoices = [...quizzQuestionChoice];
+      const updatedChoices = [...quizQuestionChoice];
       updatedChoices[qIndex] = choice;
-      setQuizzQuestionChoice(updatedChoices);
-      console.log("quizz choices:", updatedChoices);
-      updatedChoices.length >= chapter.quizz.length
-        ? setContentToDisplay("quizzResult")
-        : setQuizzQuestionIndex(quizzQuestionIndex + 1);
+      setQuizQuestionChoice(updatedChoices);
+      console.log("quiz choices:", updatedChoices);
+      updatedChoices.length >= chapter.quiz.questions.length
+        ? setContentToDisplay("quizResult")
+        : setQuizQuestionIndex(quizQuestionIndex + 1);
     }
 
-    //quizzQuestionIndex >= chapter.quizz.length && setQuizzQuestionIndex(0);
-    const quizzButtons = chapter.quizz[quizzQuestionIndex].answers.map((e, i) => {
-      return <Button key={i} onPress={() => handleQuestionChoice(quizzQuestionIndex, i)} type="question" label={e} />;
+    const quizButtons = chapter.quiz.questions[quizQuestionIndex].answers.map((e, i) => {
+      return <Button key={i} onPress={() => handleQuestionChoice(quizQuestionIndex, i)} type="question" label={e} />;
     });
 
     return (
       <>
         <View style={styles.title}>
-          <Text style={styles.titleQuestion}>{chapter.quizz[quizzQuestionIndex].question}</Text>
+          <Text style={styles.titleQuestion}>{chapter.quiz.questions[quizQuestionIndex].question}</Text>
         </View>
-        <View style={styles.questionContainer}>{quizzButtons}</View>
+        <View style={styles.questionContainer}>{quizButtons}</View>
       </>
     );
   }
 
-  function DisplayQuizzResult() {
+  function DisplayQuizResult() {
     function findMode(arr) {
       const counts = {};
       for (const element of arr) {
@@ -159,12 +154,12 @@ Inspire profondément 1 fois.
       return modes.length === 1 ? modes[0] : 1;
     }
 
-    const result = chapter.quizzResult[findMode(quizzQuestionChoice)];
+    const result = chapter.quiz.results[findMode(quizQuestionChoice)];
 
     return (
       <>
         <View style={styles.title}>
-          <Text style={styles.titleText}>Resultat du quizz</Text>
+          <Text style={styles.titleText}>Resultat du quiz</Text>
         </View>
         <Text style={styles.contentText}>{result}</Text>
       </>
@@ -175,11 +170,15 @@ Inspire profondément 1 fois.
     return (
       <>
         <View style={styles.title}>
-          <Text style={styles.titleText}>{chapter.titleFlash}</Text>
+          <Text style={styles.titleText}>{chapter.flashcard.title}</Text>
           <Text style={styles.titleLogo}>{chapter.logo}</Text>
         </View>
         <ScrollView style={styles.scrollView}>
-          <Text style={styles.contentText}>{chapter.flashcard}</Text>
+          <Text style={styles.contentText}>{chapter.flashcard.definition}</Text>
+          <Text style={styles.contentText}>{chapter.flashcard.why}</Text>
+          <Text style={styles.contentText}>{chapter.flashcard.keyConcept}</Text>
+          <Text style={styles.contentText}>{chapter.flashcard.exemple}</Text>
+          <Text style={styles.contentText}>{chapter.flashcard.exercice}</Text>
         </ScrollView>
       </>
     );
@@ -189,9 +188,10 @@ Inspire profondément 1 fois.
     switch (contentToDisplay) {
       case "lesson":
         console.log(chapterIndex);
-        chapterIndex === 0 ? navigation.navigate("Map") : setContentToDisplay("quizz");
+        // chapterIndex === 0 ? navigation.navigate("Map") : setContentToDisplay("quiz");
+        setContentToDisplay("quiz");
         break;
-      case "quizzResult":
+      case "quizResult":
         setContentToDisplay("flashcard");
         break;
       case "flashcard":
@@ -220,10 +220,10 @@ Inspire profondément 1 fois.
           switch (contentToDisplay) {
             case "lesson":
               return DisplayLesson();
-            case "quizz":
-              return DisplayQuizz();
-            case "quizzResult":
-              return DisplayQuizzResult();
+            case "quiz":
+              return DisplayQuiz();
+            case "quizResult":
+              return DisplayQuizResult();
             case "flashcard":
               return DisplayFlashcard();
           }
@@ -241,7 +241,7 @@ Inspire profondément 1 fois.
           type="primary"
           label="Quitter"
         />
-        {contentToDisplay !== "quizz" ? (
+        {contentToDisplay !== "quiz" ? (
           <Button style={{ width: 110 }} onPress={() => handleNextButton()} type="primary" label="Suivant" />
         ) : (
           <Button style={{ backgroundColor: "", width: 110 }} />
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     color: "#666",
     lineHeight: 28,
   },
-  // style for Quizz inside of contentContainer
+  // style for Quiz inside of contentContainer
   titleQuestion: {
     fontSize: 18,
     fontWeight: "600",
