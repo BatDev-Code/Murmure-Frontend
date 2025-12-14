@@ -9,6 +9,7 @@ import {
 import DurationSelector from "../../components/DurationSelector";
 import Button from "../../components/Button";
 import { useState } from "react";
+import ParrotChatBtn from "../../components/ParrotChatBtn";
 
 export default function MeditationHomeScreen({ navigation }) {
   // Récupération des states: theme de méditation, mode (guidée ou solo), duration
@@ -45,12 +46,18 @@ export default function MeditationHomeScreen({ navigation }) {
             </Text>
 
             {/* Perroquet : ouvre modale Chat */}
-            <Pressable onPress={() => navigation.navigate("ChatScreen")}>
+
+            {/* <Pressable onPress={() => navigation.navigate("Chat")}>
               <Image
                 source={require("../../assets/chat/perroquet.png")}
                 style={styles.perroquet}
               />
-            </Pressable>
+            </Pressable> */}
+
+            <ParrotChatBtn
+              onPress={() => navigation.navigate("Chat")}
+              style={styles.perroquet}
+            />
           </View>
         </View>
 

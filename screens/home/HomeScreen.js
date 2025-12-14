@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -8,18 +8,15 @@ import {
   Image,
   Animated,
   Dimensions,
-  Alert,
   Pressable,
-  TextInput,
-} from 'react-native';
-import { useSelector } from 'react-redux';
+} from "react-native";
+import { useSelector } from "react-redux";
 
-import Label from '../../components/Label';
-import Button from '../../components/Button';
-
+import Button from "../../components/Button";
+import ParrotChatBtn from "../../components/ParrotChatBtn";
 
 // Obtenir les dimensions de l'écran pour l'exemple
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 // --- 1. LE COMPOSANT BOUTON PULSANT ---
 // Ce composant gère sa propre animation pour être réutilisable.
@@ -53,9 +50,10 @@ const PulsingButton = ({ onPress, color, style }) => {
   // Couleur dynamique basée sur la prop 'color'
   // const ringColor = color || '#FF5722';
   // const centerColor = color || '#FF5722';
-  const rippleColor = color || '#FF5722';
+  const rippleColor = color || "#FF5722";
 
-  return ( // RETURN DES PULSING BUTTON
+  return (
+    // RETURN DES PULSING BUTTON
     <View style={[styles.buttonWrapper, style]}>
       {/* L'anneau animé en arrière-plan */}
       <Animated.View
@@ -74,7 +72,7 @@ const PulsingButton = ({ onPress, color, style }) => {
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={onPress}
-        style={[styles.buttonCenter, { backgroundColor: 'transparent' }]}
+        style={[styles.buttonCenter, { backgroundColor: "transparent" }]}
       />
     </View>
   );
@@ -84,11 +82,7 @@ export default function HomeScreen({ navigation }) {
   const { isConnected, username } = useSelector((state) => state.userConnection);
 
   return (
-    <ImageBackground
-      style={styles.background}
-      source={require('../../assets/homescreen.png')}
-      resizeMode="cover"
-    >
+    <ImageBackground style={styles.background} source={require("../../assets/homescreen.png")} resizeMode="cover">
       {/* <Image source={require('../../assets/perroquet.png')}
              style={styles.perroquet}
       /> */}
@@ -118,59 +112,38 @@ export default function HomeScreen({ navigation }) {
             type="primary"
             style={styles.compteButton}
             onPress={() => {
-              console.log('ok le btn mon compte fonctionne!');
-              navigation.navigate('Compte');
+              console.log("ok le btn mon compte fonctionne!");
+              navigation.navigate("Compte");
             }}
           />
 
-          <Text style={styles.compteStatus}>
-            {isConnected ? 'Connecté' : 'Non connecté'}
-          </Text>
+          <Text style={styles.compteStatus}>{isConnected ? "Connecté" : "Non connecté"}</Text>
 
           <View style={styles.header}>
             <View style={styles.messageBubble}>
               <Text style={styles.messageText}>
-                Bonjour!{'\n'}
-                Comment allez-vous aujourd'hui ?{'\n'}
-                Souhaitez vous me parler ou commencer votre parcours?{' '}
-                <Text style={{ fontStyle: 'italic' }}>
-                  (cliquez sur la porte vers le jardin){'\n'}
-                </Text>
-                Ou faire une activité en particuler ?{' '}
-                <Text style={{ fontStyle: 'italic' }}>
-                  (selectionnez l'étagère)
-                </Text>
+                Bonjour!{"\n"}
+                Comment allez-vous aujourd'hui ?{"\n"}
+                Souhaitez vous me parler ou commencer votre parcours?{" "}
+                <Text style={{ fontStyle: "italic" }}>(cliquez sur la porte vers le jardin){"\n"}</Text>
+                Ou faire une activité en particuler ?{" "}
+                <Text style={{ fontStyle: "italic" }}>(selectionnez l'étagère)</Text>
               </Text>
 
               {/* Perroquet : ouvre modale Chat */}
-              <Pressable onPress={() => navigation.navigate('ChatScreen')}>
-                <Image
-                  source={require('../../assets/chat/perroquet.png')}
-                  style={styles.perroquet}
-                />
-              </Pressable>
+              {/* <Pressable onPress={() => navigation.navigate("ChatScreen")}>
+                <Image source={require("../../assets/chat/perroquet.png")} style={styles.perroquet} />
+              </Pressable> */}
+              <ParrotChatBtn onPress={() => navigation.navigate("Chat")} style={styles.perroquet} />
             </View>
           </View>
 
-          <View style={styles.messageia}>
-            <Text
-              style={styles.dialogueperroquet}
-              // placeholder="Ecris moi si tu veux me parler !"
-              placeholderTextColor="#224C4A"
-              onPress={() => {
-                console.log('ok le lien vers chatscreen fonctionne!');
-                navigation.navigate('ChatScreen');
-              }}
-            >
-              Ecris moi si tu veux me parler !
-            </Text>
-          </View>
 
           {/* --- BOUTON 1 (Bas à gauche) --- */}
           <PulsingButton
             color="#ebaa20ff" // Or pale
             style={styles.pulsingEtagere}
-            onPress={() => navigation.navigate('Shelves')}
+            onPress={() => navigation.navigate("Shelves")}
             children="Etagère"
           />
 
@@ -178,7 +151,7 @@ export default function HomeScreen({ navigation }) {
           <PulsingButton
             color="#2aa148ff" // Vert doux
             style={styles.pulsingCarte}
-            onPress={() => navigation.navigate('Map')}
+            onPress={() => navigation.navigate("Map")}
             children="Carte"
           />
         </View>
@@ -192,14 +165,14 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    width: '100%',
-    height: '100%',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+    width: "100%",
+    height: "100%",
+    justifyContent: "flex-end",
+    alignItems: "center",
   },
 
   perroquet: {
-    position: 'absolute',
+    position: "absolute",
     top: 10,
     right: 2,
     width: 100,
@@ -209,37 +182,37 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: 20,
   },
 
   labelContainer: {
-    position: 'relative',
-    width: '100%',
-    height: '100%',
+    position: "relative",
+    width: "100%",
+    height: "100%",
     marginTop: 30,
   },
 
   messageBubble: {
-    backgroundColor: '#D8F0E4',
+    backgroundColor: "#D8F0E4",
     paddingVertical: 18,
     paddingHorizontal: 20,
     borderRadius: 18,
-    width: '100%',
-    position: 'relative',
+    width: "100%",
+    position: "relative",
   },
 
   messageText: {
     fontSize: 15.5,
     lineHeight: 21,
-    fontWeight: '500',
-    color: '#224C4A',
+    fontWeight: "500",
+    color: "#224C4A",
   },
 
   messageia: {
-    position: 'relative',
-    backgroundColor: '#D8F0E4',
+    position: "relative",
+    backgroundColor: "#D8F0E4",
     paddingVertical: 20,
     paddingHorizontal: 20,
     borderRadius: 12,
@@ -250,12 +223,12 @@ const styles = StyleSheet.create({
   },
 
   dialogueperroquet: {
-    position: 'absolute',
+    position: "absolute",
     top: 6,
-    color: '#224C4A',
+    color: "#224C4A",
     fontSize: 15.5,
-    fontWeight: '500',
-    textAlign: 'center',
+    fontWeight: "500",
+    textAlign: "center",
     lineHeight: 21,
     marginLeft: 20,
   },
@@ -266,7 +239,7 @@ const styles = StyleSheet.create({
   },
 
   compteButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 5,
     left: 1,
     marginTop: 30,
@@ -274,15 +247,15 @@ const styles = StyleSheet.create({
   },
 
   compteStatus: {
-    position: 'absolute',
+    position: "absolute",
     top: 5,
     left: 160,
     marginTop: 44,
     fontSize: 16,
-    fontWeight: '600',
-    fontStyle: 'italic',
-    color: '#5B9BD5',
-    textAlign: 'left',
+    fontWeight: "600",
+    fontStyle: "italic",
+    color: "#5B9BD5",
+    textAlign: "left",
     zIndex: 100,
   },
 
@@ -306,11 +279,6 @@ const styles = StyleSheet.create({
   //   marginBottom: 50,
   // },
 
-
-
-
-
-
   // backgroundImage: {
   //   width: '100%',
   //   height: '100%',
@@ -319,17 +287,17 @@ const styles = StyleSheet.create({
 
   // Styles du composant PulsingButton
   buttonWrapper: {
-    position: 'absolute', // Permet de placer le bouton sur l'image
+    position: "absolute", // Permet de placer le bouton sur l'image
     width: 50, // Taille globale de la zone du bouton
     height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     // zIndex assure que le bouton est au-dessus de l'image
     zIndex: 10,
   },
 
   pulseRing: {
-    position: 'absolute', // L'anneau est derrière le centre
+    position: "absolute", // L'anneau est derrière le centre
     width: 40, // Taille de base de l'anneau
     height: 40,
     borderRadius: 20, // Pour faire un cercle parfait (moitié de la taille)
@@ -340,7 +308,7 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 15,
     // Petite ombre pour le relief (optionnel)
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,

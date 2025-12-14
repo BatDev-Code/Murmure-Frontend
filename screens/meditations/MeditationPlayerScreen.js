@@ -49,6 +49,11 @@ export default function MeditationPlayer({ route, navigation }) {
 
   // UseEffect du player méditation guidée, fetch au lancement du screen
   useEffect(() => {
+    if (mode !== "guidee") {
+      setLoading(false);
+      return;
+    }
+
     fetch(`${BACKEND_ADDRESS}/meditation/player`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

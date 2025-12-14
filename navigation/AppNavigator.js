@@ -43,8 +43,8 @@ export default function AppNavigator() {
 {     /* Home et loading */}
       <Stack.Screen name="Home" component={HomeScreen} />
 
-      {/* Chat avec IA */}
-      <Stack.Screen name="ChatScreen" component={ChatScreen} />
+      {/* Chat avec IA A SUPPRIMER!!!!*/}
+      {/* <Stack.Screen name="ChatScreen" component={ChatScreen} /> */}
 
       {/* Mon Compte */}
       <Stack.Screen name="Compte" component={CompteScreen} />

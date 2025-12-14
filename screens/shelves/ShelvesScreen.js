@@ -23,7 +23,7 @@ export default function ShelvesScreen({ navigation }) {
       <Label onPress={() => navigation.navigate("Chat")}> Chat</Label>
 
       {/* Bouton Précédent */}
-      <Button onPress={() => navigation.goBack()} type="back" />
+      <Button onPress={() => navigation.navigate("Home")} type="back" />
        
     </View>
   );
