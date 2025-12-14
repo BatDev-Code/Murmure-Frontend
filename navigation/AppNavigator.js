@@ -11,11 +11,7 @@ import ShelvesScreen from "../screens/shelves/ShelvesScreen";
 
 import MapScreen from "../screens/map/MapScreen";
 
-
-//lessons
 import LessonScreen from "../screens/lessons/LessonScreen";
-import QuizzScreen from "../screens/lessons/QuizzScreen";
-import FlashcardScreen from "../screens/lessons/FlashcardScreen";
 
 // Meditations
 import MeditationHomeScreen from "../screens/meditations/MeditationHomeScreen";
@@ -28,27 +24,33 @@ import RespirationCountdownScreen from "../screens/respirations/RespirationCount
 // Chat
 import ChatScreen from "../screens/chat/ChatScreen";
 
+//Compte
+import SignUpScreen from "../screens/compte/SignUpScreen";
+import SignInScreen from "../screens/compte/SignInScreen";
+
 // Importer tous les screens : auth,lessons, loading, etc...
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="WelcomeScreen" //Ici chacun met le nom de son screen, comme ça qd on lance expoGo on arrive dessus. A la fin, on mettre "Home"
-      screenOptions={{ headerShown: false }}
-    >
+      initialRouteName="WelcomeScreen" //Ici chacun met le nom de son screen, comme ça qd on lance expoGo on arrive dessus. A la fin, on mettre "WelcomeScreen"
+      screenOptions={{ headerShown: false }}>
       {/* Page de bienvenue paysage */}
       <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
 
-{     /* Home et loading */}
+      {/* Home et loading */}
       <Stack.Screen name="Home" component={HomeScreen} />
 
-      {/* Chat avec IA */}
-      <Stack.Screen name="ChatScreen" component={ChatScreen} />
+      {/* Chat avec IA A SUPPRIMER!!!!*/}
+      {/* <Stack.Screen name="ChatScreen" component={ChatScreen} /> */}
 
       {/* Mon Compte */}
       <Stack.Screen name="Compte" component={CompteScreen} />
 
+      <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
+
+      <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
 
       {/* Shelves (étagère) */}
       <Stack.Screen name="Shelves" component={ShelvesScreen} />
@@ -58,8 +60,6 @@ export default function AppNavigator() {
 
       {/* lesson */}
       <Stack.Screen name="Lesson" component={LessonScreen} />
-      <Stack.Screen name="Quizz" component={QuizzScreen} />
-      <Stack.Screen name="Flashcard" component={FlashcardScreen} />
 
       {/* Meditation */}
       <Stack.Screen name="MeditationHome" component={MeditationHomeScreen} />
@@ -74,12 +74,12 @@ export default function AppNavigator() {
         name="Chat"
         component={ChatScreen}
         options={{
-           presentation: "modal",
+          presentation: "modal",
           headerShown: false,
           animation: "slide_from_bottom",
           keyboardHandlingEnabled: false, // <-- Ajoute ça
           // behavior: "position", //ne pas effacer, indispensable pour KeyAvoindingView
-         }}
+        }}
       />
     </Stack.Navigator>
   );

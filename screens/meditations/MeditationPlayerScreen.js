@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   View,
   Text,
@@ -15,10 +16,12 @@ import { Ionicons } from "@expo/vector-icons";
 // Doc audio: https://docs.expo.dev/versions/latest/sdk/av/
 
 import { BACKEND_ADDRESS } from "../../config";
+import { useNavigation } from "@react-navigation/native";
 
 export default function MeditationPlayer({ route, navigation }) {
   // Params passés par l'écran MeditationHomeScreen
-  const { type, mode, duration } = route.params;
+  const { theme, mode, duration } = route.params;
+  // console.log(theme, mode, duration);
 
   // states définis
   const [audioUrl, setAudioUrl] = useState("");
@@ -40,18 +43,33 @@ export default function MeditationPlayer({ route, navigation }) {
   const progressSolo = ecouleSolo / totalSoloDuration;
   const [isSoloPlaying, setIsSoloPlaying] = useState(false);
 
+  // states du player meditation guidée
+  const [errorNotFound, setErrorNotFound] = useState(false);
+
+  // const safeNav = useNavigation(navigation);
+
   // UseEffect du player méditation guidée, fetch au lancement du screen
   useEffect(() => {
-    fetch(`${BACKEND_ADDRESS}/meditation`, {
+    if (mode !== "guidee") {
+      setLoading(false);
+      return;
+    }
+
+    fetch(`${BACKEND_ADDRESS}/meditation/player`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type, mode, duration }),
+      body: JSON.stringify({ theme, mode, duration }),
     })
       .then((res) => res.json())
       .then(async (data) => {
         // console.log("data", data);
 
-        if (!data.audioUrl) return;
+        if (!data.audioUrl) {
+          // si aucune méditation trouvée
+          setLoading(false);
+          setErrorNotFound(true);
+          return;
+        }
 
         // Si tout est ok, on met à jour le state avec l'url renvoyé par le backend
         setAudioUrl(data.audioUrl);
@@ -119,7 +137,7 @@ export default function MeditationPlayer({ route, navigation }) {
   //calcul temps restant et ecoule
   const ecoule = position / 1000; // en secondes
   const total = durationMs / 1000;
-  const restant = total - ecoule;
+  // const restant = total - ecoule;
   // console.log("ecoule, total", ecoule, total);
 
   function formatTime(seconds) {
@@ -189,7 +207,7 @@ export default function MeditationPlayer({ route, navigation }) {
       {/* Player pour méditations guidées */}
       {mode === "guidee" && !loading && (
         <View style={styles.playerContainer}>
-          <Text style={styles.title}>Méditation {type}</Text>
+          <Text style={styles.title}>Méditation {theme}</Text>
           <Text style={styles.subtitle}>
             {duration} minutes - {mode}
           </Text>
@@ -272,6 +290,17 @@ export default function MeditationPlayer({ route, navigation }) {
         type="back"
         style={styles.backBtn}
         onPress={() => setShowExitPopup(true)}
+      />
+
+      {/* Modale aucune méditation guidée avec ces choix trouvée */}
+      <ConfirmModal
+        visible={errorNotFound}
+        message="Aucune méditation disponible pour ce choix."
+        singleButton={true} //1 seul bouton
+        onConfirm={() => {
+          setErrorNotFound(false);
+          navigation.goBack();
+        }}
       />
 
       {/* Modale confirmation voulez vous arrêter? */}

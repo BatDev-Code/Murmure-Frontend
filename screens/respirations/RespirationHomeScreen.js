@@ -1,14 +1,9 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  Pressable,
-  Image,
-} from "react-native";
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
 import Button from "../../components/Button";
 import DurationSelector from "../../components/DurationSelector";
 import { useState } from "react";
+import ParrotChatBtn from "../../components/ParrotChatBtn";
 
 export default function RespirationHomeScreen({ navigation }) {
   const [duration, setDuration] = useState(5);
@@ -30,12 +25,18 @@ export default function RespirationHomeScreen({ navigation }) {
               suivre un rythme doux d'inspiration et d'expiration guidé.
             </Text>
             {/* Perroquet : ouvre modale Chat */}
-            <Pressable onPress={() => navigation.navigate("ChatScreen")}>
+
+            {/* <Pressable onPress={() => navigation.navigate("ChatScreen")}>
               <Image
                 source={require("../../assets/chat/perroquet.png")}
                 style={styles.perroquet}
               />
-            </Pressable>
+            </Pressable> */}
+
+            <ParrotChatBtn
+              onPress={() => navigation.navigate("Chat")}
+              style={styles.perroquet}
+            />
           </View>
         </View>
 
@@ -109,8 +110,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: -10,
     bottom: -100,
-    width: 100,
-    height: 100,
+    // width: 100,
+    // height: 100,
     transform: [{ scaleX: -1 }], //perroquet retourné miroir
   },
 

@@ -1,197 +1,272 @@
-import React, { useEffect, useRef } from 'react';
-import { View, 
-         Text, 
-         StyleSheet, 
-         TouchableOpacity, 
-         ImageBackground,
-         Image, 
-         Animated,
-         Dimensions,
-         Alert,
-         Pressable,
-         TextInput, } from "react-native";
+import React, { useEffect, useState, useRef } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ImageBackground,
+  Image,
+  Animated,
+  Dimensions,
+  Pressable,
+} from "react-native";
+import { useSelector } from "react-redux";
 
-import Label from "../../components/Label";
 import Button from "../../components/Button";
+import ParrotChatBtn from "../../components/ParrotChatBtn";
+
+        
+// import pour les infobulles
+import AsyncStorage from '@react-native-async-storage/async-storage'; // pour le stockage local
+import InfoBubble from "../../components/InfoBulleHome"; // composant infobulle personnalisé
+
 
 // Obtenir les dimensions de l'écran pour l'exemple
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window'); // dimensions de l'écran utilisé pour positionner les boutons
+
+
 
 // --- 1. LE COMPOSANT BOUTON PULSANT ---
+
 // Ce composant gère sa propre animation pour être réutilisable.
 const PulsingButton = ({ onPress, color, style }) => {
-  // Valeur animée qui ira de 0 à 1 en boucle
-  const animation = useRef(new Animated.Value(0)).current;
+      // Valeur animée qui ira de 0 à 1 en boucle
+        const animation = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    // Définition de la boucle d'animation
-    Animated.loop(
-      Animated.timing(animation, {
-        toValue: 1,
-        duration: 2000, // Durée d'un battement (1.5s)
-        useNativeDriver: true, // Important pour la fluidité sur mobile
-      })
-    ).start();
-  }, [animation]);
+        useEffect(() => {
+          // Définition de la boucle d'animation
+          Animated.loop(
+            Animated.timing(animation, {
+              toValue: 1,
+              duration: 2000, // Durée d'un battement (1.5s)
+              useNativeDriver: true, // Important pour la fluidité sur mobile
+            })
+          ).start();
+        }, [animation]);
 
-  // Interpolation : Transformer la valeur 0->1 en Échelle (taille)
-  const scaleAnim = animation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 2.5], // Le cercle grandit de 1x à 2.5x sa taille
-  });
+        // Interpolation : Transformer la valeur 0->1 en Échelle (taille)
+        const scaleAnim = animation.interpolate({
+          inputRange: [0, 1],
+          outputRange: [1, 2.5], // Le cercle grandit de 1x à 2.5x sa taille
+        });
 
-  // Interpolation : Transformer la valeur 0->1 en Opacité
-  const opacityAnim = animation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 0], // L'opacité passe de 0.8 à invisible (0)
-  });
+        // Interpolation : Transformer la valeur 0->1 en Opacité
+        const opacityAnim = animation.interpolate({
+          inputRange: [0, 1],
+          outputRange: [1, 0], // L'opacité passe de 0.8 à invisible (0)
+        });
 
   // Couleur dynamique basée sur la prop 'color'
   // const ringColor = color || '#FF5722';
   // const centerColor = color || '#FF5722';
-  const rippleColor = color || '#FF5722';
+  const rippleColor = color || "#FF5722";
 
 
-  return ( // RETURN DES PULSING BUTTON
-    <View style={[styles.buttonWrapper, style]}>
-      
-      {/* L'anneau animé en arrière-plan */}
-        <Animated.View
-          style={[
-            styles.pulseRing,
-            {
-              backgroundColor: rippleColor,
-              // On applique les transformations calculées au-dessus
-              transform: [{ scale: scaleAnim }],
-              opacity: opacityAnim,
-            },
-          ]}
-        />
+    return ( // RETURN DES PULSING BUTTON
+      <View style={[styles.buttonWrapper, style]}>
+        
+        {/* L'anneau animé en arrière-plan */}
+          <Animated.View
+            style={[
+              styles.pulseRing,
+              {
+                backgroundColor: rippleColor,
+                // On applique les transformations calculées au-dessus
+                transform: [{ scale: scaleAnim }],
+                opacity: opacityAnim,
+              },
+            ]}
+          />
 
         {/* Le bouton central cliquable */}
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={onPress}
-          style={[styles.buttonCenter, { backgroundColor: 'transparent' }]}
-        />
-    </View>
-  );
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={onPress}
+            style={[styles.buttonCenter, { backgroundColor: 'transparent' }]}
+          />
+      </View>
+    );
 };
 
 
-
-
 export default function HomeScreen({ navigation }) {
-  return (
-    <ImageBackground style={styles.background}
-        source={require('../../assets/homescreen.png')}
-        resizeMode="cover"
-        >
 
-        {/* <Image source={require('../../assets/perroquet.png')} 
-               style={styles.perroquet}
-        /> */}
+  // integration de l'infobulle
+    const [infoBubble, setInfoBubble] = useState({ visible: false, message: '' });
 
-      <View style={styles.container}>
-              <View style={styles.labelContainer}>
-                {/* Lien vers l'étagère */}
-                {/* <Label onPress={() => navigation.navigate("Shelves")} 
-                      children="Etagère" 
-                      style={styles.etagere}
-                      /> */}
+    // 1. Log à chaque rendu (très important pour voir les mises à jour d'état)
+    console.log(`[HomeScreen -- Infobulle] 🎨 Rendu. État bulle: visible=${infoBubble.visible}, msg="${infoBubble.message}"`);
 
-                {/* Lien vers la map */}
-                {/* <Label onPress={() => navigation.navigate("Map")} 
-                      children="Carte" 
-                      style={styles.carte}
-                      /> */}
 
-                {/* <Image
-                  source={{ uri: 'https://placehold.co/600x900/2E4053/FFFFFF/png?text=Illustration+Feu+de+Camp' }}
-                  style={styles.backgroundImage}
-                  resizeMode="cover"
-                /> */}
-                  <Button
-                      label="Mon compte"
-                      type="primary"
-                      style={styles.compteButton}
-                      onPress={() => {
-                        console.log("ok le btn mon compte fonctionne!");
-                        navigation.navigate("Compte");
-                      }}
-                  />
+    useEffect(() => {
+      // console.log('[HomeScreen -- Infobulle] 🚀 useEffect (Mount) -> Lancement de checkVisitCount');
+      checkVisitCount();
+    }, []);
 
-                  <View style={styles.header}>
-                      <View style={styles.messageBubble}>
-                          <Text style={styles.messageText}>
-                                Bonjour!{"\n"}
-                                Comment allez-vous aujourd'hui ?{"\n"}
-                                Souhaitez vous me parler ou commencer votre parcours? <Text style={{ fontStyle: 'italic' }}>(cliquez sur la porte vers le jardin){"\n"}</Text>
-                                Ou faire une activité en particuler ? <Text style={{ fontStyle: 'italic' }}>(selectionnez l'étagère)</Text>
-                          </Text>
-                  
-                          {/* Perroquet : ouvre modale Chat */}
-                            <Pressable onPress={() => navigation.navigate("ChatScreen")}>
-                                <Image
-                                  source={require("../../assets/chat/perroquet.png")}
-                                  style={styles.perroquet}
-                                />
-                            </Pressable>
+    const checkVisitCount = () => {
+      // console.log('[HomeScreen -- Infobulle] ⏳ Début lecture AsyncStorage...');
+      
+      AsyncStorage.getItem('visitCount') // permet de recuperer le compteur de visites
+      // rappel. asyncStorage est une API de stockage local pour react native; similaire au localStorage du navigateur web.
+        .then((visitCount) => {
+          // console.log(`[HomeScreen -- Infobulle] Valeur brute récupérée du stockage: ${visitCount}`);
+          
+          const count = visitCount ? parseInt(visitCount) : 0; // ParseInt est une fonction JS qui convertit une chaine de caractères (string) en nombre entier
+          const newCount = count + 1; // a chaque visite on incrémente le compteur de 1.
+          
+          console.log(`[HomeScreen -- Infobulle] Calcul compteur: Ancien=${count} -> Nouveau=${newCount}`);
+
+          return AsyncStorage.setItem('visitCount', newCount.toString()) //fonction toString() permet de convertir un nombre en chaîne de caractères => nécessaire car AsyncStorage ne stocke que des chaînes de caractères
+             .then(() => {
+              // console.log('[HomeScreen -- Infobulle] Nouveau compteur sauvegardé dans AsyncStorage');
+              
+              if (newCount === 1) { // condition pour la 1ère visite
+                // console.log('[HomeScreen -- Infobulle] Condition: 1ère visite -> Mise à jour state "Bienvenue sur Murmure"');
+                setInfoBubble({ 
+                  visible: true, 
+                  message: "Bienvenue sur Murmure!\n\nSouhaitez vous me parler ou commencer votre parcours?\n\nJe vous invite à cliquer sur l'étagère ou la porte vers le jardin.\n\n N'hésites pas à venir me parler!" 
+                });
+              
+              } else if (newCount >= 2) { // condition pour les visites suivantes
+                // console.log('[HomeScreen -- Infobulle] Condition: 2ème visite ou plus -> Mise à jour state "Ravi de vous revoir"');
+                setInfoBubble({ 
+                  visible: true, 
+                  message: "✨ Ravi de vous revoir! ✨\n\nComment allez-vous aujourd'hui?\n\nSouhaitez-vous continuer vers votre parcours ou initier une séance de relaxation?\n\nOu peut-être préférez-vous me parler?" 
+                });
+              }
+            });
+        })
+        .catch((error) => {
+          console.error('[HomeScreen -- Infobulle] ❌ Erreur lors de la vérification des visites:', error);
+        });
+    };
+
+    const closeInfoBubble = () => {
+        // console.log('[HomeScreen -- Infobulle] 🔇 Appel de closeInfoBubble -> Reset du state');
+      setInfoBubble({ visible: false, message: '' });
+    };
+
+    // FONCTION TEMPORAIRE DE TEST - À commenter plus tard // sert à réinitialiser le compteur de visites
+    const resetVisitCount = () => {
+      AsyncStorage.removeItem('visitCount')
+        .then(() => {
+          console.log('[HomeScreen -- Infobulle] 🔄 Compteur réinitialisé ! Rechargez la page pour tester.');
+          Alert.alert('Compteur réinitialisé', 'Fermes et rouvres l\'écran pour voir la bulle de bienvenue.');
+        })
+        .catch((error) => {
+          console.error('[HomeScreen -- Infobulle] ❌ Erreur lors de la réinitialisation:', error);
+        });
+    };
+
+    return (
+      <ImageBackground style={styles.background}
+          source={require('../../assets/homescreen.png')}
+          resizeMode="cover"
+          >
+    
+        <View style={styles.container}>
+              {/* Bulle d'information */}
+                <InfoBubble 
+                  message={infoBubble.message}
+                  visible={infoBubble.visible}
+                  onClose={closeInfoBubble}
+                />
+
+
+                <View style={styles.labelContainer}>
+
+                  {/* Bouton Mon Compte en haut à gauche */}
+                    <Button
+                        label="Mon compte"
+                        type="primary"
+                        style={styles.compteButton}
+                        onPress={() => {
+                          console.log("ok le btn mon compte fonctionne!");
+                          navigation.navigate("Compte");
+                        }}
+                    />
+
+                  {/* BOUTON TEMPORAIRE DE TEST POUR REINITIALISER LE COMPTEUR - À commenter plus tard  */}
+                    <Button
+                        label="Reset Bulle"
+                        type="primary"
+                        style={styles.resetButton}
+                        onPress={resetVisitCount}
+                    />
+
+                      <View style={styles.header}>
+                          <View style={styles.messageBubble}>
+                              {/* <Text style={styles.messageText}>
+                                    Bonjour!{"\n"}
+                                    Comment allez-vous aujourd'hui ?{"\n"}
+                                    Souhaitez vous me parler ou commencer votre parcours? <Text style={{ fontStyle: 'italic' }}>(cliquez sur la porte vers le jardin){"\n"}</Text>
+                                    Ou faire une activité en particuler ? <Text style={{ fontStyle: 'italic' }}>(selectionnez l'étagère)</Text>
+                              </Text> */}
+                      
+                              {/* Perroquet : ouvre screen Chat */}
+                                <Pressable onPress={() => {navigation.navigate("ChatScreen")}}>
+                                    <Image
+                                      source={require("../../assets/chat/perroquet.png")}
+                                      style={styles.perroquet}
+                                    />
+                                </Pressable>
                           </View>
-                    </View>
+                      </View>
 
-                  <View style={styles.messageia}>
-                    <Text
-                      style={styles.dialogueperroquet}
-                      // placeholder="Ecris moi si tu veux me parler !"
-                      placeholderTextColor="#224C4A"
+                    <View style={styles.messageia}>
+                      <Text
+                        style={styles.dialogueperroquet}
+                        placeholderTextColor="#224C4A"
+                        onPress={() => {
+                          console.log("ok le lien vers chatscreen fonctionne!");
+                          navigation.navigate("ChatScreen");
+                        }}>
+                        {/* Ecris moi si tu veux me parler ! */}
+                      </Text>
+                    </View>  
+                      
+
+                  {/* --- BOUTON 1 (Bas à gauche) --- */}
+                    <PulsingButton
+                      color="#ebaa20ff" // Or pale
+                      style={styles.pulsingEtagere}
                       onPress={() => {
-                        console.log("ok le lien vers chatscreen fonctionne!");
-                        navigation.navigate("ChatScreen");
-                      }}
-                    >Ecris moi si tu veux me parler !</Text>
-                  </View>  
-                    
+                        console.log("ok le lien vers l'etagere fonctionne!");
+                        navigation.navigate("Shelves")}}
+                          children="Etagère"
+                    />
 
-                {/* --- BOUTON 1 (Bas à gauche) --- */}
-                  <PulsingButton
-                    color="#ebaa20ff" // Or pale
-                    style={styles.pulsingEtagere}
-                    onPress={() => navigation.navigate("Shelves")}
-                        children="Etagère"
-                  />
+                  {/* --- BOUTON 2 (Bas à droite) --- */}
+                    <PulsingButton
+                      color="#2aa148ff" // Vert doux
+                      style={styles.pulsingCarte}
+                      onPress={() => {
+                        console.log("ok le lien vers la map fonctionne!");
+                        navigation.navigate("Map")}}
+                          children="Carte"
+                    />
 
-                {/* --- BOUTON 2 (Bas à droite) --- */}
-                  <PulsingButton
-                    color="#2aa148ff" // Vert doux
-                    style={styles.pulsingCarte}
-                    onPress={() => navigation.navigate("Map")}
-                        children="Carte"
-                  />
+                </View>
 
-            
-
-              </View>
-
-        {/* Ici ajouter lien vers mon compte */}
-      </View>
-    </ImageBackground>  
+          {/* Ici ajouter lien vers mon compte */}
+        </View>
+      </ImageBackground>  
   );
 }
 
 const styles = StyleSheet.create({
-   background: {
+  background: {
     flex: 1,
-    width: '100%',
-    height: '100%',
-    justifyContent: 'flex-end',  
-    alignItems: 'center', 
+    width: "100%",
+    height: "100%",
+    justifyContent: "flex-end",
+    alignItems: "center",
   },
 
   perroquet: {
-    position: 'absolute',
+    position: "absolute",
     top: 10,
-    right: 2,
+    left: 90,
     width: 100,
     height: 100,
     transform: [{ scaleX: -1 }],
@@ -204,15 +279,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 
-    labelContainer: {
-    position: 'relative',
-    width: '100%',
-    height: '100%',
+  labelContainer: {
+    position: "relative",
+    width: "100%",
+    height: "100%",
     marginTop: 30,
   },
 
   messageBubble: {
-    backgroundColor: "#D8F0E4",
+    // backgroundColor: "#D8F0E4",
     paddingVertical: 18,
     paddingHorizontal: 20,
     borderRadius: 18,
@@ -220,98 +295,93 @@ const styles = StyleSheet.create({
     position: "relative",
   },
 
-   messageText: {
-    fontSize: 15.5,
-    lineHeight: 21,
-    fontWeight: "500",
-    color: "#224C4A",
-  },
+  //  messageText: {
+  //   fontSize: 15.5,
+  //   lineHeight: 21,
+  //   fontWeight: "500",
+  //   color: "#224C4A",
+  // },
 
-  messageia: {
-    position: "relative",
-    backgroundColor: "#D8F0E4",
-    paddingVertical: 20,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    marginTop: 130,
+  // messageia: {
+  //   position: "relative",
+  //   backgroundColor: "#D8F0E4",
+  //   paddingVertical: 20,
+  //   paddingHorizontal: 20,
+  //   borderRadius: 12,
+  //   marginTop: 0,
+  //   right: 140,
     // padding: 40,
     // width: '100%',
-    // alignSelf: 'flex-start',
-  },
-
+    // alignSelf: 'center ',
+  // },
 
   dialogueperroquet: {
-    position: 'absolute',
+    position: "absolute",
     top: 6,
     color: "#224C4A",
     fontSize: 15.5,
-    fontWeight: '500',
-    textAlign: 'center',
+    fontWeight: "500",
+    textAlign: "center",
     lineHeight: 21,
     marginLeft: 20,
   },
 
-   header: {
+  header: {
     paddingTop: 100,
     paddingBottom: 10,
   },
 
   compteButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 5,
-    left: 1,
+    right: 60,
     marginBottom: 50,
     marginTop: 30,
-    zIndex: 100, // S'assure que le bouton est au-dessus des autres éléments
+    zIndex: 100,
   },
 
-  // title: {
-  //   fontSize: 24,
-  //   fontWeight: "600",
-  //   marginBottom: 10,
-  // },
-  // subtitle: {
-  //   fontSize: 16,
-  //   color: "#666",
-  // },
+  compteStatus: {
+    position: "absolute",
+    top: 5,
+    left: 160,
+    marginTop: 44,
+    fontSize: 16,
+    fontWeight: "600",
+    fontStyle: "italic",
+    color: "#5B9BD5",
+    textAlign: "left",
+    zIndex: 100,
+  },
 
-  // etagere: {
-  //   marginRight: 80,
-  //   marginBottom: 50,
-  // },
-
-  // carte: {
-  //   marginRight: 40,
-  //   marginBottom: 50,
-  // },
-
-
-
-
-
-
-  // backgroundImage: {
-  //   width: '100%',
-  //   height: '100%',
-  //   position: 'absolute',
-  // },
+  // STYLE TEMPORAIRE - À supprimer plus tard
+  resetButton: {
+    position: 'absolute',
+    top: 5,
+    left: 60,
+    marginBottom: 50,
+    marginTop: 30,
+    zIndex: 100,
+  },
+ 
 
   // Styles du composant PulsingButton
   buttonWrapper: {
-    position: 'absolute', // Permet de placer le bouton sur l'image
-    width: 50,  // Taille globale de la zone du bouton
+    position: "absolute", // Permet de placer le bouton sur l'image
+    width: 50, // Taille globale de la zone du bouton
     height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     // zIndex assure que le bouton est au-dessus de l'image
-    zIndex: 10, 
+    zIndex: 10,
   },
+
   pulseRing: {
-    position: 'absolute', // L'anneau est derrière le centre
-    width: 40,  // Taille de base de l'anneau
+    position: "absolute", // L'anneau est derrière le centre
+    width: 40, // Taille de base de l'anneau
     height: 40,
     borderRadius: 20, // Pour faire un cercle parfait (moitié de la taille)
   },
+
   buttonCenter: {
     width: 30, // Le centre est un peu plus petit que l'anneau de départ
     height: 30,
@@ -325,15 +395,13 @@ const styles = StyleSheet.create({
   },
 
   pulsingEtagere: {
-    bottom: 300,    // Position depuis le bas
-    left: 25,      // Position depuis la gauche
+    bottom: 300,    
+    right: 130,     
   },
 
   pulsingCarte: {
-    bottom: 300,    // Position depuis le bas
-    right: 50,     // Position depuis la droite
+    bottom: 300,    
   },
-
 
 
 });
