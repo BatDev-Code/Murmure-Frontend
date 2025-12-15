@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   StyleSheet,
   Text,
@@ -17,6 +17,7 @@ import * as Haptics from "expo-haptics";
 import Button from "../../components/Button";
 import { BACKEND_ADDRESS } from "../../config";
 import { Ionicons } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
 
 const COLORS = {
   orPale: "#EBC97D",
@@ -30,31 +31,55 @@ const COLORS = {
 };
 
 export default function ChatScreen({ route, navigation }) {
+  const { userToken, username } = useSelector((state) => state.userConnection); //récup du token
+
   const [socket, setSocket] = useState(null);
   const [message, setMessage] = useState(""); //message texte le l'utilisateur
   const [messages, setMessages] = useState([]); // historique des messages
   const [loading, setLoading] = useState(false);
 
+  const flatListRef = useRef(null); //pour le scroll
+
   // Connexion au serveur Socket.IO
   useEffect(() => {
     const newSocket = io(BACKEND_ADDRESS, {
       transports: ["websocket"],
+      auth: { token: userToken, username: username }, //on envoie le token
     });
 
     setSocket(newSocket);
 
+    newSocket.on("chat-history", (history) => {
+      console.log("Historique reçu:", history);
+
+      // Besoin de transformer le backend en format du front
+      const formatted = history
+        .filter((m) => m.role !== "system")
+        .map((m) => ({
+          sender: m.role === "user" ? "me" : "ai",
+          text: m.content,
+        }));
+      setMessages(formatted);
+    });
+
     // Quand le serveur envoie la réponse de l'IA
     newSocket.on("ai-message", (msg) => {
       setLoading(false);
-
-      // vibration légère à la réception
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
       setMessages((prev) => [...prev, { sender: "ai", text: msg }]);
     });
 
     return () => newSocket.disconnect();
-  }, []);
+  }, [userToken]);
+
+  useEffect(() => {
+    console.log("scroll déclenché");
+    if (messages.length > 0 && flatListRef.current) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 200); // pour laisser le temps au message de s'afficher
+    }
+  }, [messages]);
 
   // Envoyer un message
   const handleSend = () => {
@@ -102,6 +127,7 @@ export default function ChatScreen({ route, navigation }) {
 
           {/* Affichage de tous les messages */}
           <FlatList
+            ref={flatListRef} //ajout pour scroll
             data={messages}
             renderItem={renderMessage}
             keyExtractor={(item, index) => index.toString()}
@@ -110,6 +136,7 @@ export default function ChatScreen({ route, navigation }) {
           {/* Loading */}
           {loading && (
             <ActivityIndicator size="large" color={COLORS.vertSaugeClair} />
+  
           )}
 
           {/* Input + bouton envoyer */}

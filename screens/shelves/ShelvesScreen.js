@@ -80,7 +80,7 @@ export default function ShelvesScreen({ navigation }) {
           style={styles.pulsingMeditation}
           onPress={() => {
             console.log("ok lien vers MeditationHome fonctionnel");
-            navigation.navigate("Home");
+            navigation.navigate("MeditationHome");
           }}
           // children="Etagère"
         />
