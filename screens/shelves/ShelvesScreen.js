@@ -74,13 +74,13 @@ export default function ShelvesScreen({ navigation }) {
         {/* Bouton Précédent */}
         <Button onPress={() => navigation.navigate("Home")} type="back" />
 
-        {/* --- BOUTON  Meditatoin --- */}
+        {/* --- BOUTON  Meditation --- */}
         <PulsingButton
           color="#f1c972ff" // Or pale
           style={styles.pulsingMeditation}
           onPress={() => {
             console.log("ok lien vers MeditationHome fonctionnel");
-            navigation.navigate("Home");
+            navigation.navigate("MeditationHome");
           }}
           // children="Etagère"
         />
@@ -97,7 +97,7 @@ export default function ShelvesScreen({ navigation }) {
         />
 
         {/* --- BOUTON Flashcard --- */}
-        <PulsingButton
+        {/* <PulsingButton
           color="#4b5458ff" // Vert doux
           style={styles.pulsingFlashcard}
           onPress={() => {
@@ -105,7 +105,7 @@ export default function ShelvesScreen({ navigation }) {
             navigation.navigate("flashcard");
           }}
           // children="Carte"
-        />
+        /> */}
 
         {/* --- BOUTON ChatScreen--- */}
         <PulsingButton
