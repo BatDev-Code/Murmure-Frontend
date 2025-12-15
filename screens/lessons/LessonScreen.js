@@ -1,48 +1,68 @@
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useState, useEffect } from 'react';
 
 // Necessary here ? better on app.js ?
-import { BACKEND_ADDRESS } from "../../config";
+import { BACKEND_ADDRESS } from '../../config';
 
-import ConfirmModal from "../../components/ConfirmModal";
-import Button from "../../components/Button";
-import { useSelector } from "react-redux";
+import ConfirmModal from '../../components/ConfirmModal';
+import Button from '../../components/Button';
+import { useSelector } from 'react-redux';
 
 const chaptersSafe = [
   {
     index: 1,
-    logo: "🌏",
+    logo: '🌏',
     title: "Chapitre 1: pourquoi tu n'as pas fetch les data ?",
     content:
       "Est ce que tu as oublié d'allumer ton back ?\nOu bien tu n'as pas lancé le script pour ajouter les datas à mongo ?\n\nℹ️ Regarde le readme sur le back 😉\n\nPour te punir voila un lorem ipsum\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam scelerisque nunc ac malesuada sollicitudin. Mauris sit amet condimentum tortor. Aliquam volutpat ornare ipsum, ac congue ligula tempus sit amet. Vestibulum pretium nunc lobortis condimentum finibus. Cras in arcu accumsan, fermentum tellus in, volutpat enim. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse a consectetur lectus. Cras purus arcu, varius vel massa eu, eleifend lobortis tortor. Donec vel maximus diam, sed lacinia arcu. Sed quis nulla tempor, condimentum risus eu, varius lacus. Morbi ac iaculis lorem, at mollis ipsum. Nam in leo ante.",
     quiz: {
       questions: [
         {
-          question: "Quand tu marches dehors, tu…",
-          answers: ["Oublie t'es chaussures", "Oublie la poele allumée sur le feu", "Oublie de tirer la chasse d'eau"],
+          question: 'Quand tu marches dehors, tu…',
+          answers: [
+            "Oublie t'es chaussures",
+            'Oublie la poele allumée sur le feu',
+            "Oublie de tirer la chasse d'eau",
+          ],
         },
         {
-          question: "Pendant les repas, tu…",
-          answers: ["Oublie t'es chaussures", "Oublie la poele allumée sur le feu", "Oublie de tirer la chasse d'eau"],
+          question: 'Pendant les repas, tu…',
+          answers: [
+            "Oublie t'es chaussures",
+            'Oublie la poele allumée sur le feu',
+            "Oublie de tirer la chasse d'eau",
+          ],
         },
         {
-          question: "Quand une émotion forte arrive, tu…",
-          answers: ["Oublie t'es chaussures", "Oublie la poele allumée sur le feu", "Oublie de tirer la chasse d'eau"],
+          question: 'Quand une émotion forte arrive, tu…',
+          answers: [
+            "Oublie t'es chaussures",
+            'Oublie la poele allumée sur le feu',
+            "Oublie de tirer la chasse d'eau",
+          ],
         },
       ],
       results: [
-        "Tu devrai marcher pieds nu",
-        "Tu devrai souscrire à une assurance !",
-        "Va plutot aux toilettes au bureau",
+        'Tu devrai marcher pieds nu',
+        'Tu devrai souscrire à une assurance !',
+        'Va plutot aux toilettes au bureau',
       ],
     },
     flashcard: {
       title: "Qu'est ce qu'on as retenu ?",
-      definition: "🔍 bah pas grand chose\n",
-      why: "🎯 Que tu est globalement plutot douée en quiz \n",
+      definition: '🔍 bah pas grand chose\n',
+      why: '🎯 Que tu est globalement plutot douée en quiz \n',
       keyConcept: "🧩 Et que t'oublie parfois des choses\n",
-      exemple: "⚡️ Comme le backend par exemple\n",
+      exemple: '⚡️ Comme le backend par exemple\n',
       exercice: "📝 Ce message s'autodetruira dans 1312 jours !",
     },
   },
@@ -53,7 +73,7 @@ export default function LessonScreen({ navigation, route }) {
 
   const [chapters, setChapters] = useState([]);
 
-  const [contentToDisplay, setContentToDisplay] = useState("lesson");
+  const [contentToDisplay, setContentToDisplay] = useState('lesson');
   const [quizQuestionIndex, setQuizQuestionIndex] = useState(0);
   const [quizQuestionChoice, setQuizQuestionChoice] = useState([]);
 
@@ -68,21 +88,18 @@ export default function LessonScreen({ navigation, route }) {
       .then((res) => res.json())
       .then((data) => {
         if (data && data.chapters && data.chapters.length > 0) {
-          console.log("✅ Data received from backend");
           setChapters(data.chapters);
         } else {
-          console.log("⚠️ Backend empty, loading chaptersSafe");
           setChapters(chaptersSafe);
         }
       })
       .catch((err) => {
-        console.log("❌ Fetch error, loading chaptersSafe", err);
         setChapters(chaptersSafe);
       })
       .finally(() => {
         setLoading(false);
       });
-  }, []); 
+  }, []);
 
   if (loading) {
     return <Text>Loading...</Text>;
@@ -99,9 +116,28 @@ export default function LessonScreen({ navigation, route }) {
           <Text style={styles.titleText}>{chapter.title}</Text>
           <Text style={styles.titleLogo}>{chapter.logo}</Text>
         </View>
-        <ScrollView style={styles.scrollView}>
-          <Text style={styles.contentText}>{chapter.content}</Text>
-        </ScrollView>
+        <View style={styles.scrollContainer}>
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+          >
+            <Text style={styles.contentText}>{chapter.content}</Text>
+          </ScrollView>
+
+          {/* Masque de dégradé Top */}
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0)']}
+            style={styles.maskTop}
+            pointerEvents="none" // Important pour permettre de scroller en dessous du masque
+          />
+
+          {/* Masque de dégradé Bottom */}
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)']}
+            style={styles.maskBottom}
+            pointerEvents="none" // Important pour permettre de scroller en dessous du masque
+          />
+        </View>
       </>
     );
   }
@@ -111,20 +147,30 @@ export default function LessonScreen({ navigation, route }) {
       const updatedChoices = [...quizQuestionChoice];
       updatedChoices[qIndex] = choice;
       setQuizQuestionChoice(updatedChoices);
-      console.log("quiz choices:", updatedChoices);
       updatedChoices.length >= chapter.quiz.questions.length
-        ? setContentToDisplay("quizResult")
+        ? setContentToDisplay('quizResult')
         : setQuizQuestionIndex(quizQuestionIndex + 1);
     }
 
-    const quizButtons = chapter.quiz.questions[quizQuestionIndex].answers.map((e, i) => {
-      return <Button key={i} onPress={() => handleQuestionChoice(quizQuestionIndex, i)} type="question" label={e} />;
-    });
+    const quizButtons = chapter.quiz.questions[quizQuestionIndex].answers.map(
+      (e, i) => {
+        return (
+          <Button
+            key={i}
+            onPress={() => handleQuestionChoice(quizQuestionIndex, i)}
+            type="question"
+            label={e}
+          />
+        );
+      }
+    );
 
     return (
       <>
         <View style={styles.title}>
-          <Text style={styles.titleQuestion}>{chapter.quiz.questions[quizQuestionIndex].question}</Text>
+          <Text style={styles.titleQuestion}>
+            {chapter.quiz.questions[quizQuestionIndex].question}
+          </Text>
         </View>
         <View style={styles.questionContainer}>{quizButtons}</View>
       </>
@@ -139,8 +185,10 @@ export default function LessonScreen({ navigation, route }) {
       }
 
       // create an object with frequency of answer selection
-      const counts2 = arr.reduce((acc, val) => ((acc[val] = (acc[val] || 0) + 1), acc), {});
-      console.log(counts2);
+      const counts2 = arr.reduce(
+        (acc, val) => ((acc[val] = (acc[val] || 0) + 1), acc),
+        {}
+      );
 
       // get the most frequent value of each key
       const maxFrequency = Math.max(...Object.values(counts));
@@ -186,52 +234,56 @@ export default function LessonScreen({ navigation, route }) {
 
   function handleNextButton() {
     switch (contentToDisplay) {
-      case "lesson":
-        console.log(chapterIndex);
-        // chapterIndex === 0 ? navigation.navigate("Map") : setContentToDisplay("quiz");
-        setContentToDisplay("quiz");
+      case 'lesson':
+        setContentToDisplay('quiz');
         break;
-      case "quizResult":
-        setContentToDisplay("flashcard");
+      case 'quizResult':
+        setContentToDisplay('flashcard');
         break;
-      case "flashcard":
-        navigation.navigate("Map");
+      case 'flashcard':
+        navigation.navigate('Map');
         break;
     }
   }
 
   return (
     <View style={styles.mainContainer}>
-      {/* Top + marginTop dynamic en fonction de l'inset.top */}
+      {/* Coco */}
       <TouchableOpacity
-        onPress={() => {
-          setExitBehavior(() => () => navigation.pop(2));
-          setShowExitPopup(true);
-        }}
-        style={[styles.coco, { top: Math.max(insets.top, 20) }]}>
+        onPress={() => navigation.navigate('Chat')}
+        style={[styles.coco, { top: Math.max(insets.top, 20) }]}
+      >
         <Image
-          source={require("../../assets/coco.png")}
+          source={require('../../assets/coco.png')}
           style={{ width: 130, height: 130, transform: [{ scaleX: -1 }] }}
         />
       </TouchableOpacity>
 
-      <View style={[styles.contentContainer, { marginTop: Math.max(insets.top + 120, 20) }]}>
+      {/* contentContainer: Top + marginTop dynamic en fonction de l'inset.top */}
+      <View
+        style={[
+          styles.contentContainer,
+          { marginTop: Math.max(insets.top + 120, 20) },
+        ]}
+      >
         {(() => {
           switch (contentToDisplay) {
-            case "lesson":
+            case 'lesson':
               return DisplayLesson();
-            case "quiz":
+            case 'quiz':
               return DisplayQuiz();
-            case "quizResult":
+            case 'quizResult':
               return DisplayQuizResult();
-            case "flashcard":
+            case 'flashcard':
               return DisplayFlashcard();
           }
         })()}
       </View>
 
-      {/* marginBottom dynamic en fonction de l'inset.bottom */}
-      <View style={[styles.buttonContainer, { marginBottom: 20 + insets.bottom }]}>
+      {/* buttonContainer: marginBottom dynamic en fonction de l'inset.bottom */}
+      <View
+        style={[styles.buttonContainer, { marginBottom: 20 + insets.bottom }]}
+      >
         <Button
           style={{ width: 110 }}
           onPress={() => {
@@ -241,10 +293,15 @@ export default function LessonScreen({ navigation, route }) {
           type="primary"
           label="Quitter"
         />
-        {contentToDisplay !== "quiz" ? (
-          <Button style={{ width: 110 }} onPress={() => handleNextButton()} type="primary" label="Suivant" />
+        {contentToDisplay !== 'quiz' ? (
+          <Button
+            style={{ width: 110 }}
+            onPress={() => handleNextButton()}
+            type="primary"
+            label="Suivant"
+          />
         ) : (
-          <Button style={{ backgroundColor: "", width: 110 }} />
+          <Button style={{ backgroundColor: '', width: 110 }} />
         )}
       </View>
 
@@ -262,12 +319,12 @@ const styles = StyleSheet.create({
   // style for the global screen, coco positioning, contentContainer, buttons
   mainContainer: {
     flex: 1,
-    backgroundColor: "#95BE96",
-    position: "relative", //needed for "coco position:absolute" to work
+    backgroundColor: '#95BE96',
+    position: 'relative', //needed for "coco position:absolute" to work
   },
   coco: {
-    position: "absolute", //needed to put coco where we want in the main container. Defaut position behavior top: 0
-    right: "10%", //place it 10% to the right of the screen
+    position: 'absolute', //needed to put coco where we want in the main container. Defaut position behavior top: 0
+    right: '10%', //place it 10% to the right of the screen
     width: 130,
     height: 130,
     zIndex: 2, // This define the priority of the image (2 > 1 so image is in front of contentContainer)
@@ -276,7 +333,7 @@ const styles = StyleSheet.create({
     flex: 1, // Donne tout la hauteur restante au contenu (apres le marginTop ici et le margin du buttonContainer )
     marginTop: 140,
     marginBottom: 0,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 20,
     margin: 20,
     padding: 20,
@@ -284,30 +341,54 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     margin: 20,
-    flexDirection: "row",
-    justifyContent: "space-evenly",
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
   },
   // style for Lesson/Result/Flashcard inside of contentContainer
   title: {
-    alignItems: "center",
-    marginBottom: 20,
+    alignItems: 'center',
+    marginBottom: 10,
   },
   titleText: {
     fontSize: 24,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   titleLogo: {
     fontSize: 34,
   },
   contentText: {
     fontSize: 18,
-    color: "#666",
+    color: '#666',
     lineHeight: 28,
+  },
+  scrollContainer: {
+    flex: 1,
+    position: 'relative', // Nécessaire pour positionner les masques en absolu
+  },
+  scrollContent: {
+    paddingTop: 20, // Donne un peu d'espace en haut et en bas du contenu
+    paddingBottom: 30, // Donne un peu d'espace en haut et en bas du contenu
+  },
+  maskTop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 30, // Hauteur du dégradé (à ajuster)
+    zIndex: 1, // S'assure qu'il est au-dessus du contenu
+  },
+  maskBottom: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 30, // Hauteur du dégradé (peut être différente)
+    zIndex: 1,
   },
   // style for Quiz inside of contentContainer
   titleQuestion: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   questionContainer: {
     fontSize: 14,
