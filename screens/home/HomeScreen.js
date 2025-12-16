@@ -174,7 +174,11 @@ export default function HomeScreen({ navigation }) {
           />
 
           {/* Affichage du statut de connexion */}
-          {isConnected && <Text style={styles.compteStatus}>connected</Text>}
+          {isConnected ? (
+            <Text style={styles.compteStatus}>Chez {username}</Text>
+          ) : (
+            <Text style={styles.compteStatus}>non connecté</Text>
+          )}
 
           <View style={styles.header}>
             <View style={styles.messageBubble}>
@@ -331,9 +335,9 @@ const styles = StyleSheet.create({
   compteStatus: {
     position: 'absolute',
     top: 5,
-    left: 2,
-    marginTop: 44,
-    fontSize: 16,
+    left: 0,
+    marginTop: 40,
+    fontSize: 18,
     fontWeight: '600',
     fontStyle: 'italic',
     color: '#5B9BD5',

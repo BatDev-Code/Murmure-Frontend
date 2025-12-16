@@ -10,9 +10,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 
+import { BACKEND_ADDRESS } from '../../config';
+
 import ConfirmModal from '../../components/ConfirmModal';
 import Button from '../../components/Button';
-
 import { useSelector } from 'react-redux';
 
 const chaptersSafe = [
@@ -69,6 +70,10 @@ const chaptersSafe = [
 export default function LessonScreen({ navigation, route }) {
   const insets = useSafeAreaInsets(); //used to get screen SafeArea dimensions
 
+  const { userToken } = useSelector((state) => state.userConnection || {});
+
+  const [chapters, setChapters] = useState([]);
+
   const [contentToDisplay, setContentToDisplay] = useState('lesson');
   const [quizQuestionIndex, setQuizQuestionIndex] = useState(0);
   const [quizQuestionChoice, setQuizQuestionChoice] = useState([]);
@@ -76,7 +81,33 @@ export default function LessonScreen({ navigation, route }) {
   const [showExitPopup, setShowExitPopup] = useState(false); // popup sortie
   const [exitBehavior, setExitBehavior] = useState();
 
-  const chapters = useSelector((state) => state.chapters);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(`${BACKEND_ADDRESS}/chapters/`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.chapters && data.chapters.length > 0) {
+          console.log('✅ Data received from backend');
+          setChapters(data.chapters);
+        } else {
+          console.log('⚠️ Backend empty, loading chaptersSafe');
+          setChapters(chaptersSafe);
+        }
+      })
+      .catch((err) => {
+        console.log('❌ Fetch error, loading chaptersSafe', err);
+        setChapters(chaptersSafe);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
 
   // Use React navigation parameters. Default to 0 if route parameter not specified
   const chapterIndex = route?.params?.lessonNumber ?? 0;
@@ -204,7 +235,7 @@ export default function LessonScreen({ navigation, route }) {
     );
   }
 
-  function handleNextButton() {
+  async function handleNextButton() {
     switch (contentToDisplay) {
       case 'lesson':
         setContentToDisplay('quiz');
@@ -213,6 +244,29 @@ export default function LessonScreen({ navigation, route }) {
         setContentToDisplay('flashcard');
         break;
       case 'flashcard':
+        // Mettre à jour progressNb
+        if (userToken) {
+          try {
+            const response = await fetch(`${BACKEND_ADDRESS}/users/progress`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                progressNb: chapter.index,
+                token: userToken,
+              }),
+            });
+            const data = await response.json();
+            if (data.result) {
+              console.log('progressNb updated to:', chapter.index);
+            } else {
+              console.log('Error updating progressNb:', data.error);
+            }
+          } catch (error) {
+            console.log('Fetch error updating progressNb:', error);
+          }
+        }
         navigation.navigate('Map');
         break;
     }
@@ -222,7 +276,10 @@ export default function LessonScreen({ navigation, route }) {
     <View style={styles.mainContainer}>
       {/* Coco */}
       <TouchableOpacity
-        onPress={() => navigation.navigate('Chat')}
+        onPress={() => {
+          setExitBehavior(() => () => navigation.pop(2));
+          setShowExitPopup(true);
+        }}
         style={[styles.coco, { top: Math.max(insets.top, 20) }]}
       >
         <Image

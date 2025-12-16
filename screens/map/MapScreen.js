@@ -6,7 +6,7 @@ import {
   StyleSheet,
   ImageBackground,
   Image,
-  Pressable,
+  TouchableOpacity,
 } from 'react-native';
 
 import Button from '../../components/Button';
@@ -68,6 +68,11 @@ export default function MapScreen({ navigation }) {
           <Text style={styles.subtitle}>Ecran Map</Text> */}
 
         {/* Labels vers Meditations, respirations, chat */}
+        <Image
+          source={require('../../assets/feusansfeu.png')}
+          style={styles.feu3}
+        />
+
         <Label
           style={styles.chapitre3}
           onPress={() => navigation.navigate('Lesson', { lessonNumber: 2 })}
@@ -75,12 +80,22 @@ export default function MapScreen({ navigation }) {
           Chapitre 3
         </Label>
 
+        <Image
+          source={require('../../assets/feusansfeu.png')}
+          style={styles.feu2}
+        />
+
         <Label
           style={styles.chapitre2}
           onPress={() => navigation.navigate('Lesson', { lessonNumber: 1 })}
         >
           Chapitre 2
         </Label>
+
+        <Image
+          source={require('../../assets/feusansfeu.png')}
+          style={styles.feu1}
+        />
 
         <Label
           style={styles.chapitre1}
@@ -111,7 +126,7 @@ const styles = StyleSheet.create({
 
   perroquet: {
     position: 'absolute',
-    top: 65,
+    top: 60,
     right: 20,
     width: 100,
     height: 100,
@@ -163,6 +178,30 @@ const styles = StyleSheet.create({
     color: '#666',
   },
 
+  feu1: {
+    position: 'absolute',
+    top: 767,
+    left: 236,
+    width: 70,
+    height: 70,
+  },
+
+  feu2: {
+    position: 'absolute',
+    top: 642,
+    left: 313,
+    width: 70,
+    height: 70,
+  },
+
+  feu3: {
+    position: 'absolute',
+    top: 604,
+    left: 30,
+    width: 70,
+    height: 70,
+  },
+
   chapitre1: {
     position: 'absolute',
     top: 375, // Plus la valeur est élevée, plus le texte descend depuis le bas
@@ -170,6 +209,7 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontSize: 18,
     fontWeight: 'bold',
+    fontStyle: 'italic',
     // textDecorationLine: "underline",
   },
 
@@ -180,6 +220,7 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontSize: 18,
     fontWeight: 'bold',
+    fontStyle: 'italic',
     // textDecorationLine: "underline",
   },
 
@@ -190,6 +231,7 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontSize: 18,
     fontWeight: 'bold',
+    fontStyle: 'italic',
     // textDecorationLine: "underline",
   },
 
