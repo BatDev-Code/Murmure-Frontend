@@ -69,8 +69,6 @@ const chaptersSafe = [
 export default function LessonScreen({ navigation, route }) {
   const insets = useSafeAreaInsets(); //used to get screen SafeArea dimensions
 
-  // const [chapters, setChapters] = useState([]);
-
   const [contentToDisplay, setContentToDisplay] = useState('lesson');
   const [quizQuestionIndex, setQuizQuestionIndex] = useState(0);
   const [quizQuestionChoice, setQuizQuestionChoice] = useState([]);
@@ -78,34 +76,7 @@ export default function LessonScreen({ navigation, route }) {
   const [showExitPopup, setShowExitPopup] = useState(false); // popup sortie
   const [exitBehavior, setExitBehavior] = useState();
 
-  // const [loading, setLoading] = useState(true);
-
-  // useEffect(() => {
-  //   setLoading(true);
-  //   fetch(`${BACKEND_ADDRESS}/chapters/`)
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       if (data && data.chapters && data.chapters.length > 0) {
-  //         setChapters(data.chapters);
-  //       } else {
-  //         setChapters(chaptersSafe);
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       setChapters(chaptersSafe);
-  //     })
-  //     .finally(() => {
-  //       setLoading(false);
-  //     });
-  // }, []);
-
   const chapters = useSelector((state) => state.chapters);
-  console.log(chapters);
-  chapters && console.log('-------------ls:', chapters[0].title);
-
-  if (!chapters) {
-    return <Text>Loading...</Text>;
-  }
 
   // Use React navigation parameters. Default to 0 if route parameter not specified
   const chapterIndex = route?.params?.lessonNumber ?? 0;
