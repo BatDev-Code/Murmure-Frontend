@@ -456,7 +456,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 18,
     borderRadius: 10,
-    backgroundColor: "#D8F0E4",
+    backgroundColor: "#d8f0e4cc",
   },
 
   backButtonText: {

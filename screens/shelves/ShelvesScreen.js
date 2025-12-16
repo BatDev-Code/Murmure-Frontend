@@ -87,7 +87,6 @@ export default function ShelvesScreen({ navigation }) {
     >
 
         {/* Bouton Précédent */}
-        {/* MODIFICATION AVEC L'ACCORD DE BAT */}
  <View style={styles.navigationContainer}>
           <Pressable
             onPress={() => navigation.goBack()}
@@ -231,7 +230,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 18,
     borderRadius: 10,
-    backgroundColor: "#f1f7f4ff",
+    backgroundColor: "#f1f7f4d2",
   },
 
   backButtonText: {

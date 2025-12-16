@@ -108,6 +108,7 @@ export default function MeditationHomeScreen({ navigation }) {
               ))}
             </View>
           </View>
+          
           {/* Choix de la durée avec composant de type Slider */}
           <DurationSelector
             mode={mode}
@@ -116,24 +117,7 @@ export default function MeditationHomeScreen({ navigation }) {
           />
         </View>
 
-        {/* Bouton démarrage */}
-        {/* <View style={styles.footer}>
-          <Button
-            onPress={startMeditation}
-            label="Suivant"
-            type="primary"
-            style={styles.startButton}
-          /> */}
-
-        {/* Bouton Précédent */}
-        {/* <Button
-            onPress={() => navigation.navigate("Shelves")}
-            type="back"
-            style={styles.backButton}
-          />
-        </View> */}
-
-        {/* Boutons de navigation */}
+                {/* Footer */}
         <View style={styles.navigationContainer}>
           <Pressable
             onPress={() => navigation.goBack()}

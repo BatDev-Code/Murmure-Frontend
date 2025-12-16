@@ -30,7 +30,7 @@ export default function RespirationHomeScreen({ navigation }) {
           <View style={styles.messageBubble}>
             <Text style={styles.messageText}>
               Choisis la durée de ta séance de respiration. Tu pourras ensuite
-              suivre un rythme doux d'inspiration et d'expiration guidé.
+              suivre un rythme doux d'inspiration et d'expiration guidées.
             </Text>
             <View style={styles.bubblePic} />
 
@@ -53,24 +53,8 @@ export default function RespirationHomeScreen({ navigation }) {
             onChange={(value) => setDuration(value)}
           />
         </View>
-
-        {/* Bouton démarrage */}
-        {/* <View style={styles.footer}>
-          <Button
-            onPress={startBreathing}
-            label="Suivant"
-            type="primary"
-            style={styles.startButton}
-          /> */}
-
-        {/* Bouton Précédent */}
-        {/* <Button
-            onPress={() => navigation.navigate("Shelves")}
-            type="back"
-            style={styles.backButton}
-          />
-        </View> */}
-
+        
+        {/* Footer */}
         <View style={styles.navigationContainer}>
           <Pressable
             onPress={() => navigation.goBack()}
