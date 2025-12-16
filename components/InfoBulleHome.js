@@ -21,11 +21,11 @@ const InfoBubble = ({ message, visible, onClose }) => {
       }).start(() => console.log('[InfoBubble] ✨ Animation apparition terminée'));
 
       // Auto-fermeture après 4 secondes
-      console.log('[InfoBubble] ⏳ Démarrage du Timer (20s)');
+      console.log('[InfoBubble] ⏳ Démarrage du Timer (200s)');
       const timer = setTimeout(() => {
         // console.log('[InfoBubble] ⏰ Timer écoulé -> Appel de onClose()');
         onClose();
-      }, 20000);
+      }, 200000); // 200 secondes
 
       // Fonction de nettoyage
       return () => {
