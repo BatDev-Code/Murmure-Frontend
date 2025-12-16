@@ -74,13 +74,13 @@ export default function MeditationPlayer({ route, navigation }) {
         // Si tout est ok, on met à jour le state avec l'url renvoyé par le backend
         setAudioUrl(data.audioUrl);
 
-        //pour plus tard si possible: gérer le mode silencieux, à creuser:
-        // await Audio.setAudioModeAsync({
-        //   playsInSilentModeIOS: true,
-        //   allowsRecordingIOS: false,
-        //   interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
-        //   shouldDuckAndroid: true,
-        // });
+        //Gestion du mode silencieux:
+        await Audio.setAudioModeAsync({
+          playsInSilentModeIOS: true,
+          staysActiveInBackground: true,
+          shouldDuckAndroid: true,
+          playThroughEarpieceAndroid: false,
+        });
 
         // charger le son
         const { sound: newSound } = await Audio.Sound.createAsync(
@@ -101,6 +101,7 @@ export default function MeditationPlayer({ route, navigation }) {
             }
           }
         );
+        await newSound.setVolumeAsync(1.0); // Volume à 100%
 
         setSound(newSound);
         setIsPlaying(false);
@@ -346,12 +347,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: "700",
-    color: "white",
+    color: "white", //colors
   },
 
   subtitle: {
     fontSize: 18,
-    color: "#EEE",
+    color: "#EEE", //colors
   },
   // Progressbar et durée
   progressContainer: {

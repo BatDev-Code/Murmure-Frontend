@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     width: "100%",
     position: "relative",
-    marginVertical: 20,
+    marginVertical: 15,
   },
 
   messageText: {
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   perroquet: {
     position: "absolute",
     right: -10,
-    bottom: -80,
+    bottom: -70,
     width: 100,
     height: 100,
     justifyContent: "center",

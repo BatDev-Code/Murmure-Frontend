@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 10, // Needed for the modal to be shown in front of anything else 
+    zIndex: 10, // Needed for the modal to be shown in front of anything else
   },
   box: {
     width: "80%",
@@ -80,6 +80,7 @@ const styles = StyleSheet.create({
   btn: {
     flex: 1,
     paddingVertical: 12,
+    paddingHorizontal: 22,
     borderRadius: 10,
     alignItems: "center",
   },
