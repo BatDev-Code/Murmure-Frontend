@@ -6,10 +6,10 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 
-// Necessary here ? better on app.js ?
 import { BACKEND_ADDRESS } from '../../config';
 
 import ConfirmModal from '../../components/ConfirmModal';
@@ -113,16 +113,52 @@ export default function LessonScreen({ navigation, route }) {
   const chapterIndex = route?.params?.lessonNumber ?? 0;
   const chapter = chapters[chapterIndex] ? chapters[chapterIndex] : chapters[0];
 
-  function DisplayLesson() {
+  function DisplayContent(type) {
+    const isFlashcard = type === 'flashcard';
+    const title = isFlashcard ? chapter.flashcard.title : chapter.title;
+    const logo = chapter.logo;
+    const contentArray = isFlashcard
+      ? [
+          chapter.flashcard.definition,
+          chapter.flashcard.why,
+          chapter.flashcard.keyConcept,
+          chapter.flashcard.exemple,
+          chapter.flashcard.exercice,
+        ]
+      : [chapter.content];
+
     return (
       <>
         <View style={styles.title}>
-          <Text style={styles.titleText}>{chapter.title}</Text>
-          <Text style={styles.titleLogo}>{chapter.logo}</Text>
+          <Text style={styles.titleText}>{title}</Text>
+          <Text style={styles.titleLogo}>{logo}</Text>
         </View>
-        <ScrollView style={styles.scrollView}>
-          <Text style={styles.contentText}>{chapter.content}</Text>
-        </ScrollView>
+        <View style={styles.scrollContainer}>
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+          >
+            {contentArray.map((text, i) => (
+              <Text style={styles.contentText} key={i}>
+                {text}
+              </Text>
+            ))}
+          </ScrollView>
+
+          {/* Masque de dégradé Top */}
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 1)', 'rgba(255, 255, 255, 0)']}
+            style={styles.maskTop}
+            pointerEvents="none" // Important pour permettre de scroller en dessous du masque
+          />
+
+          {/* Masque de dégradé Bottom */}
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)']}
+            style={styles.maskBottom}
+            pointerEvents="none" // Important pour permettre de scroller en dessous du masque
+          />
+        </View>
       </>
     );
   }
@@ -132,7 +168,6 @@ export default function LessonScreen({ navigation, route }) {
       const updatedChoices = [...quizQuestionChoice];
       updatedChoices[qIndex] = choice;
       setQuizQuestionChoice(updatedChoices);
-      console.log('quiz choices:', updatedChoices);
       updatedChoices.length >= chapter.quiz.questions.length
         ? setContentToDisplay('quizResult')
         : setQuizQuestionIndex(quizQuestionIndex + 1);
@@ -175,7 +210,6 @@ export default function LessonScreen({ navigation, route }) {
         (acc, val) => ((acc[val] = (acc[val] || 0) + 1), acc),
         {}
       );
-      console.log(counts2);
 
       // get the most frequent value of each key
       const maxFrequency = Math.max(...Object.values(counts));
@@ -201,29 +235,9 @@ export default function LessonScreen({ navigation, route }) {
     );
   }
 
-  function DisplayFlashcard() {
-    return (
-      <>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>{chapter.flashcard.title}</Text>
-          <Text style={styles.titleLogo}>{chapter.logo}</Text>
-        </View>
-        <ScrollView style={styles.scrollView}>
-          <Text style={styles.contentText}>{chapter.flashcard.definition}</Text>
-          <Text style={styles.contentText}>{chapter.flashcard.why}</Text>
-          <Text style={styles.contentText}>{chapter.flashcard.keyConcept}</Text>
-          <Text style={styles.contentText}>{chapter.flashcard.exemple}</Text>
-          <Text style={styles.contentText}>{chapter.flashcard.exercice}</Text>
-        </ScrollView>
-      </>
-    );
-  }
-
   async function handleNextButton() {
     switch (contentToDisplay) {
       case 'lesson':
-        console.log(chapterIndex);
-        // chapterIndex === 0 ? navigation.navigate("Map") : setContentToDisplay("quiz");
         setContentToDisplay('quiz');
         break;
       case 'quizResult':
@@ -260,7 +274,7 @@ export default function LessonScreen({ navigation, route }) {
 
   return (
     <View style={styles.mainContainer}>
-      {/* Top + marginTop dynamic en fonction de l'inset.top */}
+      {/* Coco */}
       <TouchableOpacity
         onPress={() => {
           setExitBehavior(() => () => navigation.pop(2));
@@ -274,6 +288,7 @@ export default function LessonScreen({ navigation, route }) {
         />
       </TouchableOpacity>
 
+      {/* contentContainer: Top + marginTop dynamic en fonction de l'inset.top */}
       <View
         style={[
           styles.contentContainer,
@@ -283,18 +298,18 @@ export default function LessonScreen({ navigation, route }) {
         {(() => {
           switch (contentToDisplay) {
             case 'lesson':
-              return DisplayLesson();
+              return DisplayContent('lesson');
             case 'quiz':
               return DisplayQuiz();
             case 'quizResult':
               return DisplayQuizResult();
             case 'flashcard':
-              return DisplayFlashcard();
+              return DisplayContent('flashcard');
           }
         })()}
       </View>
 
-      {/* marginBottom dynamic en fonction de l'inset.bottom */}
+      {/* buttonContainer: marginBottom dynamic en fonction de l'inset.bottom */}
       <View
         style={[styles.buttonContainer, { marginBottom: 20 + insets.bottom }]}
       >
@@ -361,7 +376,7 @@ const styles = StyleSheet.create({
   // style for Lesson/Result/Flashcard inside of contentContainer
   title: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   titleText: {
     fontSize: 24,
@@ -374,6 +389,30 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#666',
     lineHeight: 28,
+  },
+  scrollContainer: {
+    flex: 1,
+    position: 'relative', // Nécessaire pour positionner les masques en absolu
+  },
+  scrollContent: {
+    paddingTop: 20, // Donne un peu d'espace en haut et en bas du contenu
+    paddingBottom: 30, // Donne un peu d'espace en haut et en bas du contenu
+  },
+  maskTop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 30, // Hauteur du dégradé (à ajuster)
+    zIndex: 1, // S'assure qu'il est au-dessus du contenu
+  },
+  maskBottom: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 30, // Hauteur du dégradé (peut être différente)
+    zIndex: 1,
   },
   // style for Quiz inside of contentContainer
   titleQuestion: {

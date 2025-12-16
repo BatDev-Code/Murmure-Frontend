@@ -74,7 +74,7 @@ export default function ShelvesScreen({ navigation }) {
         {/* Bouton Précédent */}
         <Button onPress={() => navigation.navigate("Home")} type="back" />
 
-        {/* --- BOUTON  Meditatoin --- */}
+        {/* --- BOUTON  Meditation --- */}
         <PulsingButton
           color="#f1c972ff" // Or pale
           style={styles.pulsingMeditation}
