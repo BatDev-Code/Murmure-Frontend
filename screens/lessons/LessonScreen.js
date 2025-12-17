@@ -10,10 +10,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 
+import { BACKEND_ADDRESS } from '../../config';
+
 import ConfirmModal from '../../components/ConfirmModal';
 import Button from '../../components/Button';
 
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateProgressNb } from '../../reducers/userConnection';
 
 const chaptersSafe = [
   {
@@ -69,6 +72,7 @@ const chaptersSafe = [
 export default function LessonScreen({ navigation, route }) {
   const insets = useSafeAreaInsets(); //used to get screen SafeArea dimensions
 
+  const dispatch = useDispatch();
   const { userToken } = useSelector((state) => state.userConnection || {});
 
   const [contentToDisplay, setContentToDisplay] = useState('lesson');
@@ -231,6 +235,8 @@ export default function LessonScreen({ navigation, route }) {
             const data = await response.json();
             if (data.result) {
               console.log('progressNb updated to:', chapter.index);
+              // Mettre à jour Redux
+              dispatch(updateProgressNb(chapter.index));
             } else {
               console.log('Error updating progressNb:', data.error);
             }

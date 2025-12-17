@@ -5,12 +5,10 @@ import {
   Text,
   StyleSheet,
   ImageBackground,
-  Image,
-  TouchableOpacity,
 } from 'react-native';
 
 import Button from '../../components/Button';
-import Label from '../../components/Label';
+import ChapterButton from '../../components/ChapterButton';
 import ParrotChatBtn from '../../components/ParrotChatBtn';
 import { useState, useEffect } from 'react';
 
@@ -23,13 +21,18 @@ export default function MapScreen({ navigation }) {
 
   const dispatch = useDispatch();
 
+  // Récupérer le progressNb de l'utilisateur depuis Redux
+  const userProgressNb = useSelector(
+    (state) => state.userConnection?.progressNb || 0
+  );
+
   useEffect(() => {
     fetch(`${BACKEND_ADDRESS}/chapters/`)
       .then((res) => res.json())
       .then((data) => {
         //console.log(data.chapters);
         dispatch(setAllChapters(data.chapters));
-        console.log("dispatched chapters")
+        console.log('dispatched chapters');
       });
   }, []);
 
@@ -68,41 +71,29 @@ export default function MapScreen({ navigation }) {
           <Text style={styles.subtitle}>Ecran Map</Text> */}
 
         {/* Labels vers Meditations, respirations, chat */}
-        <Image
-          source={require('../../assets/feusansfeu.png')}
-          style={styles.feu3}
-        />
-
-        <Label
-          style={styles.chapitre3}
+        {/* Chapitre 3 */}
+        <ChapterButton
+          chapterNumber={3}
+          progressNb={userProgressNb}
           onPress={() => navigation.navigate('Lesson', { lessonNumber: 2 })}
-        >
-          Chapitre 3
-        </Label>
-
-        <Image
-          source={require('../../assets/feusansfeu.png')}
-          style={styles.feu2}
+          style={styles.chapitre3}
         />
 
-        <Label
-          style={styles.chapitre2}
+        {/* Chapitre 2 */}
+        <ChapterButton
+          chapterNumber={2}
+          progressNb={userProgressNb}
           onPress={() => navigation.navigate('Lesson', { lessonNumber: 1 })}
-        >
-          Chapitre 2
-        </Label>
-
-        <Image
-          source={require('../../assets/feusansfeu.png')}
-          style={styles.feu1}
+          style={styles.chapitre2}
         />
 
-        <Label
-          style={styles.chapitre1}
+        {/* Chapitre 1 */}
+        <ChapterButton
+          chapterNumber={1}
+          progressNb={userProgressNb}
           onPress={() => navigation.navigate('Lesson', { lessonNumber: 0 })}
-        >
-          Chapitre 1
-        </Label>
+          style={styles.chapitre1}
+        />
 
         {/* Bouton Précédent */}
         <Button
@@ -173,66 +164,19 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
   },
 
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-  },
-
-  feu1: {
-    position: 'absolute',
+  chapitre1: {
     top: 767,
     left: 236,
-    width: 70,
-    height: 70,
-  },
-
-  feu2: {
-    position: 'absolute',
-    top: 642,
-    left: 313,
-    width: 70,
-    height: 70,
-  },
-
-  feu3: {
-    position: 'absolute',
-    top: 604,
-    left: 30,
-    width: 70,
-    height: 70,
-  },
-
-  chapitre1: {
-    position: 'absolute',
-    top: 375, // Plus la valeur est élevée, plus le texte descend depuis le bas
-    left: 25,
-    color: '#000000',
-    fontSize: 18,
-    fontWeight: 'bold',
-    fontStyle: 'italic',
-    // textDecorationLine: "underline",
   },
 
   chapitre2: {
-    position: 'absolute',
-    top: 250, // Plus la valeur est élevée, plus le texte descend depuis le bas
-    left: 100,
-    color: '#000000',
-    fontSize: 18,
-    fontWeight: 'bold',
-    fontStyle: 'italic',
-    // textDecorationLine: "underline",
+    top: 642,
+    left: 313,
   },
 
   chapitre3: {
-    position: 'absolute',
-    top: 210, // Plus la valeur est élevée, plus le texte descend depuis le bas
-    right: 100,
-    color: '#000000',
-    fontSize: 18,
-    fontWeight: 'bold',
-    fontStyle: 'italic',
-    // textDecorationLine: "underline",
+    top: 604,
+    left: 30,
   },
 
   btnBack: {
