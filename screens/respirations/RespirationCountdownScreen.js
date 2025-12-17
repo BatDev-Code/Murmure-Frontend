@@ -3,11 +3,9 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   ImageBackground,
   Pressable,
 } from 'react-native';
-import Button from '../../components/Button';
 import { Ionicons } from '@expo/vector-icons';
 import ConfirmModal from '../../components/ConfirmModal';
 import { useState, useEffect, useRef } from 'react';
@@ -58,7 +56,6 @@ export default function RespirationCountdownScreen({ route, navigation }) {
   }, []);
 
   // TIMER GLOBAL -----------------------------------
-
   // Timer global (idem méditation solo)
   useEffect(() => {
     let interval;
@@ -84,16 +81,13 @@ export default function RespirationCountdownScreen({ route, navigation }) {
   // Alternance phases inspire/expire
   useEffect(() => {
     if (!isPlaying) return;
-
     // Démarre immédiatement l'animation et les haptics pour la phase actuelle
-
     animateBreathing(phase);
     startHaptics(phase);
 
     let cycle = setInterval(() => {
       setPhase((prev) => (prev === 'inspire' ? 'expire' : 'inspire'));
     }, 5000); //ttes les 5 secs : Inspire 5 secondes / Expire 5 secondes
-    // console.log(phase);
     return () => clearInterval(cycle);
   }, [isPlaying]);
 
@@ -373,13 +367,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#224C4A',
   },
-
-  // backBtn: {
-  //   position: "absolute",
-  //   bottom: 60,
-  //   left: 40,
-  //   zIndex: 20,
-  // },
   navigationContainer: {
     position: 'absolute',
     bottom: 40,
@@ -400,7 +387,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#FFFFFF',
   },
-
   backButtonText: {
     color: '#224c4aff',
     fontSize: 16,

@@ -1,36 +1,26 @@
-import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  SafeAreaView,
-  Image,
-  Dimensions,
-} from "react-native";
-import DurationSelector from "../../components/DurationSelector";
-import Button from "../../components/Button";
-import { useState } from "react";
-import ParrotChatBtn from "../../components/ParrotChatBtn";
-import { Ionicons } from "@expo/vector-icons";
+import React from 'react';
+import { View, Text, StyleSheet, Pressable, SafeAreaView, Dimensions } from 'react-native';
+import DurationSelector from '../../components/DurationSelector';
+import { useState } from 'react';
+import ParrotChatBtn from '../../components/ParrotChatBtn';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function MeditationHomeScreen({ navigation }) {
-  const { width, height } = Dimensions.get("window");
+  // const { width, height } = Dimensions.get("window");
   // Récupération des states: theme de méditation, mode (guidée ou solo), duration
-  const [theme, setTheme] = useState("anxiete");
-  const [mode, setMode] = useState("guidee");
+  const [theme, setTheme] = useState('anxiete');
+  const [mode, setMode] = useState('guidee');
   const [duration, setDuration] = useState(5);
-  // console.log("theme:", theme, "mode:", mode, "duration:", duration);
 
   const meditationThemes = [
-    { label: "Anxiété", value: "anxiete" },
-    { label: "Sommeil", value: "sommeil" },
-    { label: "Détente", value: "detente" },
+    { label: 'Anxiété', value: 'anxiete' },
+    { label: 'Sommeil', value: 'sommeil' },
+    { label: 'Détente', value: 'detente' },
   ];
 
   // Fonction qui ouvre le screenMeditationPlayer en lui passant des params : theme,mode,duration, qui seront des req.params
   const startMeditation = () => {
-    navigation.navigate("MeditationPlayer", {
+    navigation.navigate('MeditationPlayer', {
       theme,
       mode,
       duration,
@@ -44,17 +34,13 @@ export default function MeditationHomeScreen({ navigation }) {
         <View style={styles.header}>
           <View style={styles.messageBubble}>
             <Text style={styles.messageText}>
-              Bonjour, tu peux choisir le thème de la méditation qui te convient
-              le mieux aujourd'hui! je peux soit te guider, soit te laisser
-              méditer seul! !
+              Bonjour, tu peux choisir le thème de la méditation qui te convient le mieux aujourd'hui! je peux soit te
+              guider, soit te laisser méditer seul! !
             </Text>
             <View style={styles.bubblePic} />
 
             {/* Perroquet : ouvre modale Chat */}
-            <ParrotChatBtn
-              onPress={() => navigation.navigate("Chat")}
-              style={styles.perroquet}
-            />
+            <ParrotChatBtn onPress={() => navigation.navigate('Chat')} style={styles.perroquet} />
           </View>
         </View>
 
@@ -62,53 +48,39 @@ export default function MeditationHomeScreen({ navigation }) {
           {/* Choix guidée ou solo avec bouton segmenté */}
           <View style={styles.segment}>
             <Pressable
-              style={[
-                styles.segmentBtn,
-                mode === "guidee" && styles.segmentActive,
-              ]}
-              onPress={() => setMode("guidee")}
+              style={[styles.segmentBtn, mode === 'guidee' && styles.segmentActive]}
+              onPress={() => setMode('guidee')}
             >
               <Text style={styles.segmentText}>Guidée</Text>
             </Pressable>
 
             <Pressable
-              style={[
-                styles.segmentBtn,
-                mode === "solo" && styles.segmentActive,
-              ]}
-              onPress={() => setMode("solo")}
+              style={[styles.segmentBtn, mode === 'solo' && styles.segmentActive]}
+              onPress={() => setMode('solo')}
             >
               <Text style={styles.segmentText}>Solo</Text>
             </Pressable>
           </View>
 
           <View
-            style={[
-              styles.themeBlock,
-              mode === "solo" && styles.themeBlockHidden,
-            ]}
-            pointerEvents={mode === "solo" ? "none" : "auto"}
+            style={[styles.themeBlock, mode === 'solo' && styles.themeBlockHidden]}
+            pointerEvents={mode === 'solo' ? 'none' : 'auto'}
           >
             {/* Choix du thème de méditation */}
-            <Text style={styles.label}>
-              Choix du thème de méditation guidée:
-            </Text>
+            <Text style={styles.label}>Choix du thème de méditation guidée:</Text>
             <View style={styles.choices}>
               {meditationThemes.map((item) => (
                 <Pressable
                   key={item.value}
                   onPress={() => setTheme(item.value)}
-                  style={[
-                    styles.choicesItem,
-                    theme === item.value && styles.choicesSelected,
-                  ]}
+                  style={[styles.choicesItem, theme === item.value && styles.choicesSelected]}
                 >
                   <Text>{item.label}</Text>
                 </Pressable>
               ))}
             </View>
           </View>
-          
+
           {/* Choix de la durée avec composant de type Slider */}
           <DurationSelector
             mode={mode}
@@ -117,12 +89,9 @@ export default function MeditationHomeScreen({ navigation }) {
           />
         </View>
 
-                {/* Footer */}
+        {/* Footer */}
         <View style={styles.navigationContainer}>
-          <Pressable
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
+          <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={20} color="#224c4aff" />
             <Text style={styles.backButtonText}>Retour</Text>
           </Pressable>
@@ -140,9 +109,8 @@ export default function MeditationHomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#FAFAFA",
+    backgroundColor: '#FAFAFA',
   },
-
   container: {
     flex: 1,
     paddingHorizontal: 24,
@@ -153,154 +121,141 @@ const styles = StyleSheet.create({
   header: {
     paddingTop: 40,
     paddingBottom: 10,
-    positon: "relative",
-    alignSelf: "flex-start",
+    positon: 'relative',
+    alignSelf: 'flex-start',
   },
-
   messageBubble: {
-    backgroundColor: "#D8F0E4",
+    backgroundColor: '#D8F0E4',
     paddingVertical: 18,
     paddingHorizontal: 20,
     borderRadius: 18,
-    width: "100%",
-    position: "relative",
+    width: '100%',
+    position: 'relative',
     marginVertical: 15,
   },
-
   messageText: {
     fontSize: 15.5,
     lineHeight: 21,
-    fontWeight: "500",
-    color: "#224C4A",
+    fontWeight: '500',
+    color: '#224C4A',
   },
   bubblePic: {
-    position: "absolute",
+    position: 'absolute',
     width: 16,
     height: 16,
-    backgroundColor: "#D8F0E4",
+    backgroundColor: '#D8F0E4',
     bottom: -6,
     right: 80,
-    transform: [{ rotate: "45deg" }],
+    transform: [{ rotate: '45deg' }],
   },
   perroquet: {
-    position: "absolute",
+    position: 'absolute',
     right: -10,
     bottom: -70,
     width: 100,
     height: 100,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     transform: [{ scaleX: -1 }], //perroquet retourné miroir
   },
-
   // body
   body: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     paddingTop: 25,
     paddingBottom: 20,
   },
   themeBlock: {},
-
   themeBlockHidden: {
     opacity: 0,
   },
-
   label: {
     fontSize: 16,
-    fontWeight: "700",
-    color: "#224C4A",
+    fontWeight: '700',
+    color: '#224C4A',
     marginBottom: 10,
   },
   // boutons/labels choix row
   choices: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 10,
     marginBottom: 20,
   },
-
   choicesItem: {
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: 10,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: "#D0D0D0",
+    borderColor: '#D0D0D0',
   },
-
   choicesSelected: {
-    borderColor: "#507C79",
-    backgroundColor: "#E3F2F1",
+    borderColor: '#507C79',
+    backgroundColor: '#E3F2F1',
   },
   // bouton segmenté
   segment: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginBottom: 25,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#E0E0E0",
-    overflow: "hidden",
+    borderColor: '#E0E0E0',
+    overflow: 'hidden',
   },
-
   segmentBtn: {
     flex: 1,
     paddingVertical: 12,
-    alignItems: "center",
+    alignItems: 'center',
   },
-
   segmentActive: {
-    backgroundColor: "#D9ECEB",
+    backgroundColor: '#D9ECEB',
   },
-
   segmentText: {
     fontSize: 15,
-    fontWeight: "600",
-    color: "#224C4A",
+    fontWeight: '600',
+    color: '#224C4A',
   },
 
   // footer
   navigationContainer: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 40, // Distance du bas de l'écran
     left: 0,
     right: 0,
-    flexDirection: "row",
-    justifyContent: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
     gap: 40,
     zIndex: 10,
   },
-
   backButton: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
     paddingVertical: 12,
     paddingHorizontal: 18,
     borderRadius: 10,
-    backgroundColor: "#D8F0E4",
+    backgroundColor: '#D8F0E4',
   },
-
   backButtonText: {
-    color: "#224c4aff",
+    color: '#224c4aff',
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
-
   nextButton: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
     paddingVertical: 12,
     paddingHorizontal: 18,
     borderRadius: 10,
-    backgroundColor: "#507C79",
+    backgroundColor: '#507C79',
   },
 
   nextButtonText: {
-    color: "white",
+    color: 'white',
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });

@@ -3,11 +3,9 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Pressable,
   SafeAreaView,
 } from 'react-native';
-import Button from '../../components/Button';
 import DurationSelector from '../../components/DurationSelector';
 import { useState } from 'react';
 import ParrotChatBtn from '../../components/ParrotChatBtn';
@@ -35,7 +33,6 @@ export default function RespirationHomeScreen({ navigation }) {
             <View style={styles.bubblePic} />
 
             {/* Perroquet : ouvre modale Chat */}
-
             <ParrotChatBtn
               onPress={() => navigation.navigate('Chat')}
               style={styles.perroquet}
@@ -119,16 +116,12 @@ const styles = StyleSheet.create({
     right: 80,
     transform: [{ rotate: '45deg' }],
   },
-
   perroquet: {
     position: 'absolute',
     right: -10,
     bottom: -100,
-    // width: 100,
-    // height: 100,
     transform: [{ scaleX: -1 }], //perroquet retourné miroir
   },
-
   // body
   body: {
     flex: 1,
@@ -137,14 +130,12 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingHorizontal: 20,
   },
-
   label: {
     fontSize: 16,
     fontWeight: '700',
     color: '#224C4A',
     marginBottom: 10,
   },
-
   // footer
   footer: {
     marginTop: 10,
@@ -152,7 +143,6 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     justifyContent: 'flex-end',
   },
-
   // footer
   navigationContainer: {
     position: 'absolute',
@@ -164,7 +154,6 @@ const styles = StyleSheet.create({
     gap: 40,
     zIndex: 10,
   },
-
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -174,13 +163,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#D8F0E4',
   },
-
   backButtonText: {
     color: '#224c4aff',
     fontSize: 16,
     fontWeight: '600',
   },
-
   nextButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -190,7 +177,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#507C79',
   },
-
   nextButtonText: {
     color: 'white',
     fontSize: 16,

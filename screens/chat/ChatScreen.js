@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,31 +10,29 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-} from "react-native";
-import { io } from "socket.io-client";
-import * as Haptics from "expo-haptics";
-// import { router } from "expo-router";
-import Button from "../../components/Button";
-import { BACKEND_ADDRESS } from "../../config";
-import { Ionicons } from "@expo/vector-icons";
-import { useSelector } from "react-redux";
+} from 'react-native';
+import { io } from 'socket.io-client';
+import * as Haptics from 'expo-haptics';
+import { BACKEND_ADDRESS } from '../../config';
+import { Ionicons } from '@expo/vector-icons';
+import { useSelector } from 'react-redux';
 
 const COLORS = {
-  orPale: "#EBC97D",
-  orPaleClair: "#fff7e4ff",
-  bleuMenthe: "#AAD2D0",
-  bleuMentheClair: "#b2c5c4ff",
-  pecheRosee: "#f29570ff",
-  pecheRoseeClair: "#FBB89D",
-  vertSauge: "#95BE96",
-  vertSaugeClair: "#eaf8eaff",
+  orPale: '#EBC97D',
+  orPaleClair: '#fff7e4ff',
+  bleuMenthe: '#AAD2D0',
+  bleuMentheClair: '#b2c5c4ff',
+  pecheRosee: '#f29570ff',
+  pecheRoseeClair: '#FBB89D',
+  vertSauge: '#95BE96',
+  vertSaugeClair: '#eaf8eaff',
 };
 
 export default function ChatScreen({ route, navigation }) {
   const { userToken, username } = useSelector((state) => state.userConnection); //récup du token
 
   const [socket, setSocket] = useState(null);
-  const [message, setMessage] = useState(""); //message texte le l'utilisateur
+  const [message, setMessage] = useState(''); //message texte le l'utilisateur
   const [messages, setMessages] = useState([]); // historique des messages
   const [loading, setLoading] = useState(false);
 
@@ -43,37 +41,34 @@ export default function ChatScreen({ route, navigation }) {
   // Connexion au serveur Socket.IO
   useEffect(() => {
     const newSocket = io(BACKEND_ADDRESS, {
-      transports: ["websocket"],
+      transports: ['websocket'],
       auth: { token: userToken, username: username }, //on envoie le token
     });
 
     setSocket(newSocket);
 
-    newSocket.on("chat-history", (history) => {
-      console.log("Historique reçu:", history);
-
+    newSocket.on('chat-history', (history) => {
       // Besoin de transformer le backend en format du front
       const formatted = history
-        .filter((m) => m.role !== "system")
+        .filter((m) => m.role !== 'system')
         .map((m) => ({
-          sender: m.role === "user" ? "me" : "ai",
+          sender: m.role === 'user' ? 'me' : 'ai',
           text: m.content,
         }));
       setMessages(formatted);
     });
 
     // Quand le serveur envoie la réponse de l'IA
-    newSocket.on("ai-message", (msg) => {
+    newSocket.on('ai-message', (msg) => {
       setLoading(false);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      setMessages((prev) => [...prev, { sender: "ai", text: msg }]);
+      setMessages((prev) => [...prev, { sender: 'ai', text: msg }]);
     });
 
     return () => newSocket.disconnect();
   }, [userToken]);
 
   useEffect(() => {
-    console.log("scroll déclenché");
     if (messages.length > 0 && flatListRef.current) {
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
@@ -88,22 +83,17 @@ export default function ChatScreen({ route, navigation }) {
     const text = message.trim();
 
     // Ajouter le message de l'utilisateur à la liste
-    setMessages((prev) => [...prev, { sender: "me", text }]);
+    setMessages((prev) => [...prev, { sender: 'me', text }]);
 
-    setMessage("");
+    setMessage('');
     setLoading(true);
     // Envoyer le message au backend
-    socket.emit("user-message", text);
+    socket.emit('user-message', text);
   };
 
   // renderMessage est utilisé pour affichage par la Flatlist, (item = sender + text)
   const renderMessage = ({ item }) => (
-    <View
-      style={[
-        styles.messageBubble,
-        item.sender === "me" ? styles.meBubble : styles.aiBubble,
-      ]}
-    >
+    <View style={[styles.messageBubble, item.sender === 'me' ? styles.meBubble : styles.aiBubble]}>
       <Text style={styles.messageText}>{item.text}</Text>
     </View>
   );
@@ -112,7 +102,7 @@ export default function ChatScreen({ route, navigation }) {
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
         style={styles.outerContainer}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={60} // parfois nécessaire en modal
       >
         {/* Container */}
@@ -134,10 +124,7 @@ export default function ChatScreen({ route, navigation }) {
             style={styles.messagesList}
           />
           {/* Loading */}
-          {loading && (
-            <ActivityIndicator size="large" color={COLORS.vertSaugeClair} />
-  
-          )}
+          {loading && <ActivityIndicator size="large" color={COLORS.vertSaugeClair} />}
 
           {/* Input + bouton envoyer */}
           <View style={styles.inputContainer}>
@@ -163,15 +150,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.pecheRoseeClair,
   },
-
   outerContainer: {
     flex: 1,
     padding: 16,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
   },
   handleContainer: {
-    width: "100%",
-    alignItems: "center",
+    width: '100%',
+    alignItems: 'center',
     paddingTop: 6,
     paddingBottom: 10,
   },
@@ -179,40 +165,37 @@ const styles = StyleSheet.create({
     width: 40,
     height: 5,
     borderRadius: 3,
-    backgroundColor: "#CCC",
-    alignSelf: "center",
+    backgroundColor: '#CCC',
+    alignSelf: 'center',
     marginBottom: 10,
   },
-
   // conteneur blanc bords arrondis
   card: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#E6E0D8",
-    shadowColor: "#000",
+    borderColor: '#E6E0D8',
+    shadowColor: '#000',
     shadowOpacity: 0.06,
     shadowRadius: 6,
     elevation: 2,
   },
-
   title: {
     fontSize: 24,
-    fontWeight: "600",
-    textAlign: "center",
+    fontWeight: '600',
+    textAlign: 'center',
     marginBottom: 14,
-    color: "#5A4E4D",
+    color: '#5A4E4D',
   },
   // conteneur messages
   messagesList: {
     flex: 1,
     marginBottom: 10,
   },
-
   messageBubble: {
-    maxWidth: "75%",
+    maxWidth: '75%',
     padding: 12,
     borderRadius: 16,
     marginVertical: 4,
@@ -220,35 +203,31 @@ const styles = StyleSheet.create({
   // style conditionnel me / ai
   meBubble: {
     backgroundColor: COLORS.orPaleClair,
-    alignSelf: "flex-end",
+    alignSelf: 'flex-end',
   },
   aiBubble: {
     backgroundColor: COLORS.vertSaugeClair,
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
   },
-
   messageText: {
     fontSize: 16,
-    color: "#4A4A4A",
+    color: '#4A4A4A',
   },
-
   inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 8,
   },
-
   input: {
     flex: 1,
-    backgroundColor: "#FAFAFA",
+    backgroundColor: '#FAFAFA',
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#DDD",
-    color: "#333",
+    borderColor: '#DDD',
+    color: '#333',
   },
-
   sendButton: {
     backgroundColor: COLORS.pecheRosee,
     paddingVertical: 10,
@@ -256,10 +235,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginLeft: 8,
   },
-
   sendText: {
-    color: "#fff",
-    fontWeight: "600",
+    color: '#fff',
+    fontWeight: '600',
     fontSize: 16,
   },
 });

@@ -6,23 +6,18 @@ import {
   ImageBackground,
   ActivityIndicator,
   Pressable,
-  Dimensions,
-} from "react-native";
+ } from "react-native";
 import { Audio } from "expo-av";
 import { useEffect, useState } from "react";
-import Button from "../../components/Button";
-
 import ConfirmModal from "../../components/ConfirmModal";
 import { Ionicons } from "@expo/vector-icons";
 // Doc audio: https://docs.expo.dev/versions/latest/sdk/av/
 
 import { BACKEND_ADDRESS } from "../../config";
-import { useNavigation } from "@react-navigation/native";
 
 export default function MeditationPlayer({ route, navigation }) {
   // Params passés par l'écran MeditationHomeScreen
   const { theme, mode, duration } = route.params;
-  // console.log(theme, mode, duration);
 
   // states définis
   const [audioUrl, setAudioUrl] = useState("");
@@ -65,15 +60,13 @@ export default function MeditationPlayer({ route, navigation }) {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        // console.log("data", data);
-
+   
         if (!data.audioUrl) {
           // si aucune méditation trouvée
           setLoading(false);
           setErrorNotFound(true);
           return;
         }
-
         // Si tout est ok, on met à jour le state avec l'url renvoyé par le backend
         setAudioUrl(data.audioUrl);
 
@@ -105,7 +98,6 @@ export default function MeditationPlayer({ route, navigation }) {
           }
         );
         await newSound.setVolumeAsync(1.0); // Volume à 100%
-
         setSound(newSound);
         setIsPlaying(false);
         setLoading(false);
@@ -134,15 +126,12 @@ export default function MeditationPlayer({ route, navigation }) {
   }, [isSoloPlaying, mode]);
 
   // MEDITATIONS GUIDEES
-
   // calcul de la progression en fonction du status (sound)
   const progress = position / durationMs; // entre 0 et 1
 
   //calcul temps restant et ecoule
   const ecoule = position / 1000; // en secondes
   const total = durationMs / 1000;
-  // const restant = total - ecoule;
-  // console.log("ecoule, total", ecoule, total);
 
   function formatTime(seconds) {
     const m = Math.floor(seconds / 60);
@@ -156,7 +145,6 @@ export default function MeditationPlayer({ route, navigation }) {
       if (sound) {
         sound.stopAsync();
         sound.unloadAsync();
-        console.log("Son déchargé");
       }
     };
   }, [sound]);
@@ -213,7 +201,7 @@ export default function MeditationPlayer({ route, navigation }) {
     >
       {/* Loader activityIndicator pour mes méditations guidées */}
       {loading && mode === "guidee" && (
-        <ActivityIndicator size="large" color="#fff" /> //chargement:rond qui tourne
+        <ActivityIndicator size="large" color="#fff" /> //chargement
       )}
 
       {/* Player pour méditations guidées */}
@@ -252,7 +240,6 @@ export default function MeditationPlayer({ route, navigation }) {
       )}
 
       {/* Player pour méditations solo */}
-
       {mode === "solo" && (
         <View style={styles.playerContainer}>
           <Text style={styles.title}>Méditation solo</Text>
@@ -296,13 +283,6 @@ export default function MeditationPlayer({ route, navigation }) {
           )}
         </View>
       )}
-
-      {/* <Button type="back" onPress={stopMeditation} /> */}
-      {/* <Button
-        type="back"
-        style={styles.backBtn}
-        onPress={() => setShowExitPopup(true)}
-      /> */}
 
       <View style={styles.navigationContainer}>
         <Pressable
@@ -368,12 +348,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: "700",
-    color: "white", //colors
+    color: "white", 
   },
 
   subtitle: {
     fontSize: 18,
-    color: "#EEE", //colors
+    color: "#EEE", 
   },
   // Progressbar et durée
   progressContainer: {

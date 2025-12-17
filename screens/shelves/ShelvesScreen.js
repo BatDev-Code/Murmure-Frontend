@@ -18,7 +18,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';   // Importa
 
 const { width, height } = Dimensions.get('window');                   // Obtenir les dimensions de l'écran pour l'exemple
 
-
 // --- 1. HOOK DE POSITIONNEMENT AMÉLIORÉ --- // Permet de positionner des éléments de façon responsive sur une image
 
 const useResponsiveImagePosition = (imageSource) => {
@@ -39,61 +38,62 @@ const useResponsiveImagePosition = (imageSource) => {
           img.src = imgUri; 
         }
       }
-    }, [imageSource]);
-
-    // Vérification de sécurité pour éviter les crashes
-    let imageData = null;
-
-    if (Image.resolveAssetSource) {
-      // Sur mobile (iOS/Android)
-      imageData = Image.resolveAssetSource(imageSource);
-    } else {
-      // Sur web, on utilise les dimensions chargées dynamiquement
-      imageData = imageDimensions;
     }
+  }, [imageSource]);
 
-    if (!imageData) {
-      console.warn("Image source invalide");
-      return {
-        getPos: () => ({ position: 'absolute' }),
-        scale: 1,
-        originalW: 0,
-        originalH: 0
-      };
-    }
+  // Vérification de sécurité pour éviter les crashes
+  let imageData = null;
 
-    const { width: originalW, height: originalH } = imageData; // Dimensions originales de l'image
+  if (Image.resolveAssetSource) {
+    // Sur mobile (iOS/Android)
+    imageData = Image.resolveAssetSource(imageSource);
+  } else {
+    // Sur web, on utilise les dimensions chargées dynamiquement
+    imageData = imageDimensions;
+  }
 
-    const screenRatio = screenW / screenH;              // Ratio écran
-    const imageRatio = originalW / originalH;           // Ratio image
-
-    let scale, xOffset, yOffset;                        // Variables pour le calcul
-
-    if (screenRatio > imageRatio) {                     // L'image est plus "haute" que l'écran
-      scale = screenW / originalW;                      // On base l'échelle sur la largeur
-      xOffset = 0;
-      yOffset = (screenH - originalH * scale) / 2;      // Centrage vertical
-    } else {
-      scale = screenH / originalH;                      // On base l'échelle sur la hauteur
-      yOffset = 0;
-      xOffset = (screenW - originalW * scale) / 2;      // Centrage horizontal
-    }
-
-    const getPos = (originalX, originalY) => ({         // position après mise à l'échelle et centrage
-      left: xOffset + originalX * scale,
-      top: yOffset + originalY * scale,
-      position: 'absolute',
-    });
-
+  if (!imageData) {
+    console.warn('Image source invalide');
     return {
-      getPos,           // Fonction de positionnement
-      scale,            // Facteur d'échelle pour adapter les tailles
-      originalW,        // Largeur originale de l'image
-      originalH,        // Hauteur originale de l'image
+      getPos: () => ({ position: 'absolute' }),
+      scale: 1,
+      originalW: 0,
+      originalH: 0,
     };
+  }
+
+  const { width: originalW, height: originalH } = imageData; // Dimensions originales de l'image
+
+  const screenRatio = screenW / screenH; // Ratio écran
+  const imageRatio = originalW / originalH; // Ratio image
+
+  let scale, xOffset, yOffset; // Variables pour le calcul
+
+  if (screenRatio > imageRatio) {
+    // L'image est plus "haute" que l'écran
+    scale = screenW / originalW; // On base l'échelle sur la largeur
+    xOffset = 0;
+    yOffset = (screenH - originalH * scale) / 2; // Centrage vertical
+  } else {
+    scale = screenH / originalH; // On base l'échelle sur la hauteur
+    yOffset = 0;
+    xOffset = (screenW - originalW * scale) / 2; // Centrage horizontal
+  }
+
+  const getPos = (originalX, originalY) => ({
+    // position après mise à l'échelle et centrage
+    left: xOffset + originalX * scale,
+    top: yOffset + originalY * scale,
+    position: 'absolute',
+  });
+
+  return {
+    getPos, // Fonction de positionnement
+    scale, // Facteur d'échelle pour adapter les tailles
+    originalW, // Largeur originale de l'image
+    originalH, // Hauteur originale de l'image
+  };
 };
-
-
 
 // --- 2. LE COMPOSANT BOUTON PULSANT ---
 
@@ -178,17 +178,17 @@ export default function ShelvesScreen({ navigation }) {
     const posChat = getPos(originalW * 0.59, originalH * 0.41);             //   60% de la largeur, 40% de la hauteur
     const posFlashcard = getPos(originalW * 0.65, originalH * 0.59);        //   65% de la largeur, 60% de la hauteur
 
+  // --- DÉFINITION DES POSITIONS EN POURCENTAGES ---
+  // Utilisation de pourcentages des dimensions originales pour un meilleur responsive
+  const posMeditation = getPos(originalW * 0.55, originalH * 0.36);
+  const posRespiration = getPos(originalW * 0.42, originalH * 0.52);
+  const posChat = getPos(originalW * 0.74, originalH * 0.52);
 
   return (
-    <ImageBackground
-      style={styles.background}
-      source={backgroundImage}
-      resizeMode="cover"
-     >
-
+    <ImageBackground style={styles.background} source={backgroundImage} resizeMode="cover">
       {/* --- ZONE 1 : LES BOUTONS DU DÉCOR (Position Absolue sur l'image) --- */}
 
-        {/* Méditation */}
+      {/* Méditation */}
       <PulsingButton
         color="#f1c972ff"
         style={posMeditation}
@@ -196,7 +196,7 @@ export default function ShelvesScreen({ navigation }) {
         onPress={() => navigation.navigate('MeditationHome')}
       />
 
-        {/* Respiration */}
+      {/* Respiration */}
       <PulsingButton
         color="#93c29eff"
         style={posRespiration}
@@ -204,7 +204,7 @@ export default function ShelvesScreen({ navigation }) {
         onPress={() => navigation.navigate('RespirationHome')}
       />
 
-        {/* Chat */}
+      {/* Chat */}
       <PulsingButton
         color="#f8f6f3ff"
         style={posChat}
@@ -222,27 +222,17 @@ export default function ShelvesScreen({ navigation }) {
 
 
       {/* --- ZONE 2 : UI FLOTTANTE (Bouton Retour) --- */}
-        {/* pointerEvents="box-none" est CRUCIAL : cela permet de cliquer "à travers" 
+      {/* pointerEvents="box-none" est CRUCIAL : cela permet de cliquer "à travers" 
             les zones vides de ce conteneur pour atteindre les boutons en dessous */}
 
-      <View
-        style={[styles.uiContainer, { paddingTop: Math.max(insets.top, 20) }]}
-        pointerEvents="box-none"
-       >
-      
-  
-      {/* Bouton Précédent */}
-      <View style={styles.navigationContainer}>
-        <Pressable
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Ionicons name="arrow-back" size={20} color="#224c4aff" />
-          <Text style={styles.backButtonText}>Retour</Text>
-        </Pressable>
-      </View>
-
-
+      <View style={[styles.uiContainer, { paddingTop: Math.max(insets.top, 20) }]} pointerEvents="box-none">
+        {/* Bouton Précédent */}
+        <View style={styles.navigationContainer}>
+          <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={20} color="#224c4aff" />
+            <Text style={styles.backButtonText}>Retour</Text>
+          </Pressable>
+        </View>
       </View>
     </ImageBackground>
   );
@@ -264,15 +254,15 @@ const styles = StyleSheet.create({
 
   // Styles du composant PulsingButton (les tailles sont maintenant gérées dynamiquement)
   buttonWrapper: {
-    position: "absolute",
-    justifyContent: "center",
-    alignItems: "center",
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
     zIndex: 10, // Assure que le bouton est au-dessus de l'image
     // Astuce debug : décommenter pour visualiser les zones cliquables
     // backgroundColor: 'rgba(255,0,0,0.3)',
   },
   pulseRing: {
-    position: "absolute", // L'anneau est derrière le centre
+    position: 'absolute', // L'anneau est derrière le centre
   },
   buttonCenter: {
     // Tailles dynamiques appliquées via props
