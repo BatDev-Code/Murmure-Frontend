@@ -5,10 +5,10 @@ export default function WelcomeScreen({ navigation }) {
 
   useEffect(() => {
     // Juste un timer pour la transition visuelle
-    console.log("--- [WelcomeScreen] 4. Affichage du screen paysage pendant 1,5s...");
+    // console.log("--- [WelcomeScreen] 4. Affichage du screen paysage pendant 1,5s...");
     
     const timer = setTimeout(() => {
-      console.log("--- [WelcomeScreen] 6. Navigation vers l'ecran principal HOME.");
+      // console.log("--- [WelcomeScreen] 6. Navigation vers l'ecran principal HOME.");
       navigation.replace("Home"); // .replace évite de pouvoir revenir en arrière sur l'écran de bienvenue
     }, 1200); // 1,2 secondes pour le splashscreen
       

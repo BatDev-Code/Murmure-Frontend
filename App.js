@@ -21,10 +21,10 @@ export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
 
   useEffect(() => {
-    console.log("--- [App.js] 0. Composant monté. Démarrage du processus de préparation.");
+    // console.log("--- [App.js] 0. Composant monté. Démarrage du processus de préparation.");
     async function prepare() {
       try {
-        console.log("--- [App.js] 1. Démarrage du prechargement des images dans assets ---");
+        // console.log("--- [App.js] 1. Démarrage du prechargement des images dans assets ---");
         // 2. Charger les images ici
         await Asset.loadAsync([
           require('./assets/paysage-bienvenue.png'),
@@ -35,13 +35,13 @@ export default function App() {
           require('./assets/meditation/meditation.png'),
           require('./assets/meditation/meditationBkg.png'),
         ]);
-        console.log("--- [App.js] 2. Image chargées en memoire ---");
+        // console.log("--- [App.js] 2. Image chargées en memoire ---");
 
       } catch (e) {
         console.warn(e);
       } finally {
         // 3. Dire à l'app qu'on est prêt
-        console.log("--- [App.js] 3. Application marquée comme PRÊTE (setAppIsReady -> true).");
+        // console.log("--- [App.js] 3. Application marquée comme PRÊTE (setAppIsReady -> true).");
         setAppIsReady(true);
       }
     }

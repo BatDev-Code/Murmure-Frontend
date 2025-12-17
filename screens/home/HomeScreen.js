@@ -93,9 +93,9 @@ export default function HomeScreen({ navigation }) {
   const [infoBubble, setInfoBubble] = useState({ visible: false, message: '' });
 
   // 1. Log à chaque rendu (très important pour voir les mises à jour d'état)
-  console.log(
-    `[HomeScreen -- Infobulle] 🎨 Rendu. État bulle: visible=${infoBubble.visible}, msg="${infoBubble.message}"`
-  );
+  // console.log(
+  //   `[HomeScreen -- Infobulle] 🎨 Rendu. État bulle: visible=${infoBubble.visible}, msg="${infoBubble.message}"`
+  // );
 
   useEffect(() => {
     // console.log('[HomeScreen -- Infobulle] 🚀 useEffect (Mount) -> Lancement de checkVisitCount');
@@ -113,9 +113,9 @@ export default function HomeScreen({ navigation }) {
 
         if (!isLoggedIn) {
           // Si l'utilisateur n'est PAS connecté -> toujours message de bienvenue
-          console.log(
-            '[HomeScreen -- Infobulle]  Utilisateur NON connecté -> Message de bienvenue'
-          );
+          // console.log(
+          //   '[HomeScreen -- Infobulle]  Utilisateur NON connecté -> Message de bienvenue'
+          // );
           setInfoBubble({
             visible: true,
             message:
@@ -123,9 +123,9 @@ export default function HomeScreen({ navigation }) {
           });
         } else {
           // Si l'utilisateur EST connecté -> message "ravi de vous revoir"
-          console.log(
-            '[HomeScreen -- Infobulle] ✅ Utilisateur connecté -> Message "Ravi de vous revoir"'
-          );
+          // console.log(
+          //   '[HomeScreen -- Infobulle] ✅ Utilisateur connecté -> Message "Ravi de vous revoir"'
+          // );
           setInfoBubble({
             visible: true,
             message:
@@ -168,7 +168,7 @@ export default function HomeScreen({ navigation }) {
             type="primary"
             style={styles.compteButton}
             onPress={() => {
-              console.log('ok le btn mon compte fonctionne!');
+              // console.log('ok le btn mon compte fonctionne!');
               navigation.navigate('Compte');
             }}
           />
@@ -220,7 +220,7 @@ export default function HomeScreen({ navigation }) {
             color="#ebaa20ff" // Or pale
             style={styles.pulsingEtagere}
             onPress={() => {
-              console.log("ok le lien vers l'etagere fonctionne!");
+              // console.log("ok le lien vers l'etagere fonctionne!");
               navigation.navigate('Shelves');
             }}
             children="Etagère"
@@ -231,7 +231,7 @@ export default function HomeScreen({ navigation }) {
             color="#2aa148ff" // Vert doux
             style={styles.pulsingCarte}
             onPress={() => {
-              console.log('ok le lien vers la map fonctionne!');
+              // console.log('ok le lien vers la map fonctionne!');
               navigation.navigate('Map');
             }}
             children="Carte"

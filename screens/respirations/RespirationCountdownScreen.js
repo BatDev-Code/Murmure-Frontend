@@ -1,15 +1,22 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Pressable } from "react-native";
-import Button from "../../components/Button";
-
-import ConfirmModal from "../../components/ConfirmModal";
-import { useState, useEffect, useRef } from "react";
-import { Animated } from "react-native";
-import * as Haptics from "expo-haptics";
-import { Asset } from "expo-asset"; //Chargement de l'image
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ImageBackground,
+  Pressable,
+} from 'react-native';
+import Button from '../../components/Button';
+import { Ionicons } from '@expo/vector-icons';
+import ConfirmModal from '../../components/ConfirmModal';
+import { useState, useEffect, useRef } from 'react';
+import { Animated } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import { Asset } from 'expo-asset'; //Chargement de l'image
 
 const COLORS = {
-  dark: "#433c35ff",
+  dark: '#433c35ff',
 };
 
 export default function RespirationCountdownScreen({ route, navigation }) {
@@ -20,7 +27,7 @@ export default function RespirationCountdownScreen({ route, navigation }) {
 
   const [ecoule, setEcoule] = useState(0); //valeur incrémentée par le setInterval
   const totalDuration = duration * 60; //secondes totales (car en min)
-  const [phase, setPhase] = useState("inspire"); //phases inspire/expire
+  const [phase, setPhase] = useState('inspire'); //phases inspire/expire
 
   const [showExitPopup, setShowExitPopup] = useState(false); // popup sortie
 
@@ -28,7 +35,7 @@ export default function RespirationCountdownScreen({ route, navigation }) {
 
   const scaleAnim = useRef(new Animated.Value(1)).current; //   Animation cercle= définition du cercleAnim
   const timeoutsVibrations = useRef([]); // timeouts des haptics
-
+  const [hasStarted, setHasStarted] = useState(false);
   // PRECHARGEMENT DE L'IMAGE BACKGROUND-----------------------------------
   useEffect(() => {
     // Fonction pour charger l'image
@@ -36,13 +43,13 @@ export default function RespirationCountdownScreen({ route, navigation }) {
       try {
         // Précharge l'image en cache
         await Asset.fromModule(
-          require("../../assets/respiration/respirationBkg.png")
+          require('../../assets/respiration/respirationBkg.png')
         ).downloadAsync();
 
         // Indique que l'image est chargée
         setImageLoaded(true);
       } catch (error) {
-        console.log("Erreur chargement image:", error);
+        console.log('Erreur chargement image:', error);
         // Même si erreur, affichage de l'écran
         setImageLoaded(true);
       }
@@ -79,11 +86,12 @@ export default function RespirationCountdownScreen({ route, navigation }) {
     if (!isPlaying) return;
 
     // Démarre immédiatement l'animation et les haptics pour la phase actuelle
+
     animateBreathing(phase);
     startHaptics(phase);
 
     let cycle = setInterval(() => {
-      setPhase((prev) => (prev === "inspire" ? "expire" : "inspire"));
+      setPhase((prev) => (prev === 'inspire' ? 'expire' : 'inspire'));
     }, 5000); //ttes les 5 secs : Inspire 5 secondes / Expire 5 secondes
     // console.log(phase);
     return () => clearInterval(cycle);
@@ -100,7 +108,7 @@ export default function RespirationCountdownScreen({ route, navigation }) {
   // Animation https://reactnative.dev/docs/animated
   const animateBreathing = (phase) => {
     Animated.timing(scaleAnim, {
-      toValue: phase === "inspire" ? 1.8 : 0.8, //valeur renvoyée
+      toValue: phase === 'inspire' ? 1.8 : 0.8, //valeur renvoyée
       duration: 5000, //ttes les 5 secs
       useNativeDriver: true,
     }).start();
@@ -146,7 +154,7 @@ export default function RespirationCountdownScreen({ route, navigation }) {
     ];
 
     // Choix du pattern selon la phase
-    const pattern = currentPhase === "inspire" ? inspirePattern : expirePattern;
+    const pattern = currentPhase === 'inspire' ? inspirePattern : expirePattern;
 
     // Lancement des haptics
     pattern.forEach((step) => {
@@ -176,7 +184,7 @@ export default function RespirationCountdownScreen({ route, navigation }) {
   function formatTime(seconds) {
     const m = Math.floor(seconds / 60);
     const s = Math.floor(seconds % 60);
-    return `${m}:${s < 10 ? "0" : ""}${s}`;
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
   }
 
   function stopRespiration() {
@@ -192,12 +200,12 @@ export default function RespirationCountdownScreen({ route, navigation }) {
 
   // AFFICHAGE (préalable)--------------------
   if (!imageLoaded) {
-    return <View style={{ flex: 1, backgroundColor: "#fff" }} />;
+    return <View style={{ flex: 1, backgroundColor: '#fff' }} />;
   }
 
   return (
     <ImageBackground
-      source={require("../../assets/respiration/respirationBkg.png")}
+      source={require('../../assets/respiration/respirationBkg.png')}
       style={styles.container}
       // defaultSource={require("../../assets/respiration/respirationBkg.png")}
     >
@@ -213,7 +221,7 @@ export default function RespirationCountdownScreen({ route, navigation }) {
           style={[styles.circle, { transform: [{ scale: scaleAnim }] }]}
         >
           <Text style={styles.phaseText}>
-            {phase === "inspire" ? "Inspire" : "Expire"}
+            {phase === 'inspire' ? 'Inspire' : 'Expire'}
           </Text>
         </Animated.View>
 
@@ -227,10 +235,18 @@ export default function RespirationCountdownScreen({ route, navigation }) {
           />
         </View>
 
-        {/* Bouton Play/pause */}
+        {/* Bouton Démarrer/pause/Arrêter */}
         {!isPlaying ? (
-          <Pressable style={styles.playBtn} onPress={() => setIsPlaying(true)}>
-            <Text style={styles.playText}>Démarrer</Text>
+          <Pressable
+            style={styles.playBtn}
+            onPress={() => {
+              setHasStarted(true);
+              setIsPlaying(true);
+            }}
+          >
+            <Text style={styles.playText}>
+              {hasStarted ? 'Reprendre' : 'Démarrer'}
+            </Text>
           </Pressable>
         ) : (
           <Pressable style={styles.playBtn} onPress={() => stopRespiration()}>
@@ -239,16 +255,21 @@ export default function RespirationCountdownScreen({ route, navigation }) {
         )}
 
         {/* Bouton retour */}
-        <Button
-          type="back"
-          style={styles.backBtn}
-          onPress={() => {
-            if (isPlaying) {
-              return setShowExitPopup(true);
-            }
-            navigation.goBack();
-          }}
-        />
+        <View style={styles.navigationContainer}>
+          <Pressable
+            type="back"
+            style={styles.backButton}
+            onPress={() => {
+              if (isPlaying || hasStarted) {
+                return setShowExitPopup(true);
+              }
+              navigation.goBack();
+            }}
+          >
+            <Ionicons name="arrow-back" size={20} color="#224c4aff" />
+            <Text style={styles.backButtonText}>Retour</Text>
+          </Pressable>
+        </View>
 
         {/* Modale sortie avant la fin*/}
         <ConfirmModal
@@ -269,7 +290,7 @@ export default function RespirationCountdownScreen({ route, navigation }) {
           message="Bravo ! Respiration terminée"
           onConfirm={() => {
             setShowCongrats(false);
-            navigation.navigate("Shelves");
+            navigation.navigate('Shelves');
           }}
         />
       </View>
@@ -280,19 +301,19 @@ export default function RespirationCountdownScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    resizeMode: "cover",
+    resizeMode: 'cover',
   },
 
   innerGlobal: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 20,
   },
   title: {
     fontSize: 26,
-    fontWeight: "700",
+    fontWeight: '700',
     color: COLORS.dark,
   },
 
@@ -304,43 +325,43 @@ const styles = StyleSheet.create({
     width: 180,
     height: 180,
     borderRadius: 180,
-    backgroundColor: "rgba(255,255,255,0.3)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginVertical: 40,
   },
 
   phaseText: {
     color: COLORS.dark,
     fontSize: 26,
-    fontWeight: "700",
+    fontWeight: '700',
     letterSpacing: 1.5,
   },
 
   timer: {
     color: COLORS.dark,
     fontSize: 48,
-    fontWeight: "700",
+    fontWeight: '700',
     marginTop: 20,
   },
 
   progressBarBackground: {
-    width: "80%",
+    width: '80%',
     height: 8,
-    backgroundColor: "#ffffff55",
+    backgroundColor: '#ffffff55',
     borderRadius: 4,
-    overflow: "hidden",
+    overflow: 'hidden',
     marginTop: 10,
     marginBottom: 30,
   },
 
   progressBarFill: {
-    height: "100%",
+    height: '100%',
     backgroundColor: COLORS.dark,
   },
 
   playBtn: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 20,
@@ -349,14 +370,40 @@ const styles = StyleSheet.create({
 
   playText: {
     fontSize: 20,
-    fontWeight: "700",
-    color: "#224C4A",
+    fontWeight: '700',
+    color: '#224C4A',
   },
 
-  backBtn: {
-    position: "absolute",
-    bottom: 60,
-    left: 40,
+  // backBtn: {
+  //   position: "absolute",
+  //   bottom: 60,
+  //   left: 40,
+  //   zIndex: 20,
+  // },
+  navigationContainer: {
+    position: 'absolute',
+    bottom: 40,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 30,
     zIndex: 20,
+  },
+
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 10,
+    backgroundColor: '#FFFFFF',
+  },
+
+  backButtonText: {
+    color: '#224c4aff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

@@ -13,6 +13,8 @@ import MapScreen from '../screens/map/MapScreen';
 
 import LessonScreen from '../screens/lessons/LessonScreen';
 
+import FlashcardScreen from '../screens/lessons/FlashcardScreen';
+
 // Meditations
 import MeditationHomeScreen from '../screens/meditations/MeditationHomeScreen';
 import MeditationPlayerScreen from '../screens/meditations/MeditationPlayerScreen';
@@ -35,16 +37,13 @@ export default function AppNavigator() {
   return (
     <Stack.Navigator
       initialRouteName="WelcomeScreen" //Ici chacun met le nom de son screen, comme ça qd on lance expoGo on arrive dessus. A la fin, on mettre "WelcomeScreen"
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ headerShown: false, animation: 'slide_from_right' }}
     >
       {/* Page de bienvenue paysage */}
       <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
 
       {/* Home et loading */}
       <Stack.Screen name="Home" component={HomeScreen} />
-
-      {/* Chat avec IA A SUPPRIMER!!!!*/}
-      {/* <Stack.Screen name="ChatScreen" component={ChatScreen} /> */}
 
       {/* Mon Compte */}
       <Stack.Screen name="Compte" component={CompteScreen} />
@@ -69,6 +68,9 @@ export default function AppNavigator() {
 
       {/* lesson */}
       <Stack.Screen name="Lesson" component={LessonScreen} />
+
+      {/* flashcard */}
+      <Stack.Screen name="Flashcard" component={FlashcardScreen} />
 
       {/* Meditation */}
       <Stack.Screen name="MeditationHome" component={MeditationHomeScreen} />
