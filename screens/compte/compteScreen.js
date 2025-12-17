@@ -1,15 +1,24 @@
-import { SafeAreaView, View, Text, TextInput, StyleSheet, ImageBackground, Pressable } from 'react-native';
-import { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { logout, updateUsername as updateUsernameAction } from '../../reducers/userConnection';
-import Button from '../../components/Button';
-import ConfirmModal from '../../components/ConfirmModal';
-import { BACKEND_ADDRESS } from '../../config';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  ImageBackground,
+  Pressable
+  } from "react-native";
+import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { logout, updateUsername as updateUsernameAction } from "../../reducers/userConnection";
+import Button from "../../components/Button";
+import ConfirmModal from "../../components/ConfirmModal";
+import { BACKEND_ADDRESS } from "../../config";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function CompteScreen({ navigation }) {
   const dispatch = useDispatch();
+  const insets = useSafeAreaInsets();
 
   const { isConnected, username, userToken } = useSelector((state) => state.userConnection);
 
@@ -206,9 +215,8 @@ export default function CompteScreen({ navigation }) {
       style={styles.background}
       resizeMode="cover"
     >
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <Text style={styles.title}>Gestion du compte</Text>
+        <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
+        <Text style={styles.title}>Gestion du compte</Text>
 
           <View style={styles.buttonsContainer}>
             <Button
@@ -233,8 +241,13 @@ export default function CompteScreen({ navigation }) {
             </Pressable>
           </View>
         </View>
-      </SafeAreaView>
-    </ImageBackground>
+
+        <Button
+          type="back"
+          onPress={() => navigation.navigate("Home")}
+          style={[styles.backButton, { top: insets.top + 10 }]}
+        />
+  </ImageBackground>
   );
 }
 
@@ -244,14 +257,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  safeArea: {
-    flex: 1,
-    backgroundColor: 'transparent',
-  },
   container: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 60,
   },
   title: {
     fontSize: 28,

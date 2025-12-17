@@ -48,17 +48,9 @@ export default function AppNavigator() {
       {/* Mon Compte */}
       <Stack.Screen name="Compte" component={CompteScreen} />
 
-      <Stack.Screen
-        name="SignUp"
-        component={SignUpScreen}
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }} />
 
-      <Stack.Screen
-        name="SignIn"
-        component={SignInScreen}
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
 
       {/* Shelves (étagère) */}
       <Stack.Screen name="Shelves" component={ShelvesScreen} />
@@ -74,17 +66,11 @@ export default function AppNavigator() {
 
       {/* Meditation */}
       <Stack.Screen name="MeditationHome" component={MeditationHomeScreen} />
-      <Stack.Screen
-        name="MeditationPlayer"
-        component={MeditationPlayerScreen}
-      />
+      <Stack.Screen name="MeditationPlayer" component={MeditationPlayerScreen} />
 
       {/* Respiration */}
       <Stack.Screen name="RespirationHome" component={RespirationHomeScreen} />
-      <Stack.Screen
-        name="RespirationCountdown"
-        component={RespirationCountdownScreen}
-      />
+      <Stack.Screen name="RespirationCountdown" component={RespirationCountdownScreen} />
 
       {/* Chat affiché en modale, depuis le bas*/}
       <Stack.Screen

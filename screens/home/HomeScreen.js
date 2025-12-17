@@ -12,10 +12,11 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Button from '../../components/Button';
-import ParrotChatBtn from '../../components/ParrotChatBtn'; // Bouton perroquet pour chat
-import { useFocusEffect } from '@react-navigation/native'; // Pour gérer le focus de l'écran
+import ParrotChatBtn from '../../components/ParrotChatBtn';             // Bouton perroquet pour chat
+import { useFocusEffect } from '@react-navigation/native';              // Pour gérer le focus de l'écran
 
 // import pour les infobulles
 import InfoBubble from '../../components/InfoBulleHome'; // composant infobulle personnalisé
@@ -23,11 +24,10 @@ import { setAllChapters } from '../../reducers/chapters';
 // --- 1. HOOK DE POSITIONNEMENT AMÉLIORÉ --- // Permet de positionner des éléments de façon responsive sur une image
 
 const useResponsiveImagePosition = (imageSource) => {
-  const { width: screenW, height: screenH } = useWindowDimensions(); // Dimensions de l'écran
-  const [imageDimensions, setImageDimensions] = useState({ width: 1080, height: 1920 }); // Dimensions par défaut format portrait
+  const { width: screenW, height: screenH } = useWindowDimensions();                      // Dimensions de l'écran
+  const [imageDimensions, setImageDimensions] = useState({ width: 1080, height: 1920 });  // Dimensions par défaut format portrait
 
-  useEffect(() => {
-    //le useEffect sert à charger les dimensions de l'image sur le web
+  useEffect(() => {//le useEffect sert à charger les dimensions de l'image sur le web
     // Sur web, on charge l'image pour obtenir ses vraies dimensions
     if (!Image.resolveAssetSource && typeof imageSource === 'number') {
       // Sur React Native Web, require() retourne un objet avec une propriété uri ou default
@@ -41,35 +41,34 @@ const useResponsiveImagePosition = (imageSource) => {
         img.src = imgUri;
       }
     }
-  }, [imageSource]);
+  }, [imageSource]); 
 
   // Vérification de sécurité pour éviter les crashes
-  let imageData = null;
+  let imageData = null; 
 
-  if (Image.resolveAssetSource) {
+  if (Image.resolveAssetSource) { 
     // Sur mobile (iOS/Android)
     imageData = Image.resolveAssetSource(imageSource);
   } else {
-    // Sur web, on utilise les dimensions chargées dynamiquement
-    imageData = imageDimensions;
+    imageData = imageDimensions;      // Sur web, on utilise les dimensions chargées dynamiquement                  
   }
 
-  const { width: originalW, height: originalH } = imageData; // variable dimensions originale de l'image
+  const { width: originalW, height: originalH } = imageData;      // variable dimensions originale de l'image
 
-  const screenRatio = screenW / screenH; // variable screenRatio pour Ratio écran
-  const imageRatio = originalW / originalH; // variable imageRatio pour Ratio image
+  const screenRatio = screenW / screenH;                          // variable screenRatio pour Ratio écran
+  const imageRatio = originalW / originalH;                       // variable imageRatio pour Ratio image
 
-  let scale, xOffset, yOffset; // variables de calcul
+  let scale, xOffset, yOffset;                                    // variables de calcul
 
   if (screenRatio > imageRatio) {
     // L'image est plus "haute" que l'écran
     scale = screenW / originalW;
     xOffset = 0;
-    yOffset = (screenH - originalH * scale) / 2; // Centrage vertical
+    yOffset = (screenH - originalH * scale) / 2;                  // Centrage vertical
   } else {
     scale = screenH / originalH;
     yOffset = 0;
-    xOffset = (screenW - originalW * scale) / 2; // Centrage horizontal
+    xOffset = (screenW - originalW * scale) / 2;                  // Centrage horizontal
   }
 
   const getPos = (originalX, originalY) => ({
@@ -80,12 +79,13 @@ const useResponsiveImagePosition = (imageSource) => {
   });
 
   return {
-    getPos, // Fonction de positionnement
-    scale, // Facteur d'échelle pour adapter les tailles
-    originalW, // Largeur originale de l'image
-    originalH, // Hauteur originale de l'image
+    getPos,       // Fonction de positionnement
+    scale,        // Facteur d'échelle pour adapter les tailles
+    originalW,    // Largeur originale de l'image
+    originalH,    // Hauteur originale de l'image
   };
 };
+
 
 // --- 2. LE COMPOSANT BOUTON PULSANT ---
 
@@ -99,8 +99,8 @@ const PulsingButton = ({ onPress, color, style, buttonScale = 1 }) => {
     Animated.loop(
       Animated.timing(animation, {
         toValue: 1,
-        duration: 2000, // Durée d'un battement (2s)
-        useNativeDriver: true, // Important pour la fluidité sur mobile
+        duration: 2000,         // Durée d'un battement (2s)
+        useNativeDriver: true,  // Important pour la fluidité sur mobile
       })
     ).start();
   }, [animation]);
@@ -127,8 +127,8 @@ const PulsingButton = ({ onPress, color, style, buttonScale = 1 }) => {
         styles.buttonWrapper,
         style,
         {
-          width: 50 * buttonScale,
-          height: 50 * buttonScale,
+          width: 70 * buttonScale, // Taille augmentée : 50 → 70
+          height: 70 * buttonScale,
         },
       ]}
     >
@@ -138,9 +138,9 @@ const PulsingButton = ({ onPress, color, style, buttonScale = 1 }) => {
           styles.pulseRing,
           {
             backgroundColor: rippleColor,
-            width: 40 * buttonScale,
-            height: 40 * buttonScale,
-            borderRadius: 20 * buttonScale,
+            width: 70 * buttonScale,  // Taille augmentée : 50 → 70
+            height: 70 * buttonScale,
+            borderRadius: 35 * buttonScale, // Ajusté pour rester circulaire (70/2)
             // On applique les transformations calculées au-dessus
             transform: [{ scale: scaleAnim }],
             opacity: opacityAnim,
@@ -156,9 +156,9 @@ const PulsingButton = ({ onPress, color, style, buttonScale = 1 }) => {
           styles.buttonCenter,
           {
             backgroundColor: 'transparent',
-            width: 30 * buttonScale,
-            height: 30 * buttonScale,
-            borderRadius: 15 * buttonScale,
+            width: 55 * buttonScale,  // Taille augmentée : 40 → 55
+            height: 55 * buttonScale,
+            borderRadius: 27.5 * buttonScale, // Ajusté pour rester circulaire (55/2)
           },
         ]}
       />
@@ -167,57 +167,79 @@ const PulsingButton = ({ onPress, color, style, buttonScale = 1 }) => {
 };
 
 export default function HomeScreen({ navigation }) {
-  const backgroundImage = require('../../assets/homescreen.png');
+  const insets = useSafeAreaInsets();
+  const backgroundImage = require('../../assets/homescreenCadre.png');
   const { getPos, scale, originalW, originalH } = useResponsiveImagePosition(backgroundImage); // Utilisation du hook amélioré
-  // getPos pour positionner, scale pour adapter les tailles
+                                                                                               // getPos pour positionner, scale pour adapter les tailles
 
   // --- DÉFINITION DES POSITIONS EN POURCENTAGES ---
 
-  const posEtagere = getPos(originalW * -0.22, originalH * 0.55); // PULSING BUTTON ÉTAGÈRE
-  const posCarte = getPos(originalW * 0.33, originalH * 0.55); // PULSING BUTTON CARTE
+  const posEtagere = getPos(originalW * -0.20, originalH * 0.50);                   // PULSING BUTTON ÉTAGÈRE
+  const posCarte = getPos(originalW * 0.36, originalH * 0.50);                      // PULSING BUTTON CARTE
+  const posPerroquet = getPos(originalW * 0.42, originalH * 0.128);                 // POSITION PERROQUET CHAT
+               
 
-  const posPerroquet = getPos(originalW * 0.32, originalH * 0.195); // POSITION PERROQUET CHAT
+  const { isConnected, username } = useSelector((state) => state.userConnection);   // Récupérer le statut de connexion depuis Redux
 
-  const { isConnected, username } = useSelector((state) => state.userConnection); // Récupérer le statut de connexion depuis Redux
+  const [infoBubble, setInfoBubble] = useState({ visible: false, message: '' });    // integration de l'infobulle
 
-  const [infoBubble, setInfoBubble] = useState({ visible: false, message: '' }); // integration de l'infobulle
+
+
+  // DEBUG: Afficher les valeurs des insets  ===>  a regarder dans la console pour connaitre les valeurs exactes et ajuster le positionnement 
+  console.log(`[SafeArea] top: ${insets.top}, bottom: ${insets.bottom}, left: ${insets.left}, right: ${insets.right}`);
+
+  // Modèle iPhone	       \\ insets.top	  \\ Calcul	          \\Position finale
+  // Votre iPhone (X-14)	 \\ 47px	        \\max(47-16, 10)	    \\31px ✅
+  // iPhone 14 Pro+	       \\ 59px	        \\max(59-16, 10)	    \\43px ✅             NE PAS SUPPRIMER SVP
+  // iPhone SE/8	         \\ 20px	        \\max(20-16, 10)	    \\10px ✅  
+
+              /// FORMULE : Math.max(insets.top - 16, 10)
+              /// EX: style={[styles.compteButton, { top: Math.max(insets.top - 16, 10), right: 50 }]} 
+
 
   // 1. Log à chaque rendu (très important pour voir les mises à jour d'état)
   console.log(
     `[HomeScreen -- Infobulle] 🎨 Rendu. État bulle: visible=${infoBubble.visible}, msg="${infoBubble.message}"`
   );
 
-  useEffect(() => {
+
+  
+  useEffect(() => { 
     // console.log('[HomeScreen -- Infobulle] 🚀 useEffect (Mount) -> Lancement de checkVisitCount');
     checkVisitCount();
   }, []);
 
-  const dispatch = useDispatch();
 
-  useEffect(() => {
+
+  // --- CODE POUR CHARGER LES CHAPITRES DEPUIS LE BACKEND AU MONTAGE DE L'ÉCRAN
+
+  const dispatch = useDispatch();   
+
+  useEffect(() => {                                                  // Chargement des chapitres depuis le backend
     fetch(`${BACKEND_ADDRESS}/chapters/`)
       .then((res) => res.json())
       .then((data) => {
-        if (data && data.chapters && data.chapters.length > 0) {
+        if (data && data.chapters && data.chapters.length > 0) { 
           console.log('✅ Data received from backend');
-          dispatch(setAllChapters(data.chapters));
+          dispatch(setAllChapters(data.chapters));                   // Met à jour le store Redux avec les chapitres reçus
         } else {
           console.log('⚠️ Backend empty, loading chaptersSafe');
         }
       })
-      .catch((err) => {
+      .catch((err) => {                                              // Gérer les erreurs de fetch
         console.log('❌ Fetch error, loading chaptersSafe', err);
       });
   }, []);
 
-  // NOUVEAU CODE - Basé sur le statut de connexion de l'utilisateur
+
+
+  // --- NOUVEAU CODE - Basé sur le statut de connexion de l'utilisateur CONNECTED VS NON CONNECTED
 
   useEffect(() => {
-    checkVisitCount(); // Appel initial pour vérifier le statut de visite
-  }, [isConnected]); // Dépendance sur isConnected pour réagir aux changements de statut
-
-  // NOUVEAU CODE - Basé sur le statut de connexion de l'utilisateur CONNECTED VS NON CONNECTED
-  const checkVisitCount = () => {
+    checkVisitCount();    // Appel initial pour vérifier le statut de visite
+  }, [isConnected]);      // Dépendance sur isConnected pour réagir aux changements de statut
+  
+  const checkVisitCount = () => { 
     // Utiliser le statut de connexion depuis Redux au lieu d'AsyncStorage
 
     if (!isConnected) {
@@ -243,42 +265,37 @@ export default function HomeScreen({ navigation }) {
     setInfoBubble({ visible: false, message: '' });
   };
 
+
+
+
   return (
     <ImageBackground style={styles.background} source={require('../../assets/homescreenCadre.png')} resizeMode="cover">
-      <View style={styles.container}>
+      <View style={[styles.container, { top: Math.max(insets.top - 16, 10)}]}>
         {/* Bulle d'information */}
         <InfoBubble message={infoBubble.message} visible={infoBubble.visible} onClose={closeInfoBubble} />
 
         <View style={styles.labelContainer}>
-          {/* Bouton Mon Compte en haut à gauche */}
+          {/* Bouton Mon Compte en haut à droite */}
           <Button
-            label={isConnected ? 'Mon compte' : 'Se Connecter'} // Texte dynamique basé sur le redux
+            label={isConnected ? 'Mon compte' : 'Se Connecter'}                                // Texte dynamique basé sur le redux
             type="primary"
-            style={styles.compteButton}
+            style={[styles.compteButton]}   // Position adaptative : 31px sur notch, min 10px sur anciens iPhone
             onPress={() => {
               // console.log("ok le btn mon compte fonctionne!");
               navigation.navigate('Compte');
             }}
           />
 
-          {/* Affichage du statut de connexion */}
-          {/* {isConnected && (
-                      <Text style={styles.compteStatus}>
-                        connected
-                      </Text>
-                    )} */}
-
           <View style={styles.header}>
             <View style={styles.messageBubble}>
               {/* Perroquet : ouvre screen Chat */}
               <ParrotChatBtn
                 onPress={() => {
-                  navigation.navigate('Chat');
-                }}
+                  navigation.navigate('Chat');}}
                 style={[
                   posPerroquet,
                   {
-                    width: 100 * scale,
+                    width: 100 * scale, 
                     height: 100 * scale,
                     transform: [{ scaleX: -1 }], // Miroir horizontal
                   },
@@ -354,10 +371,6 @@ const styles = StyleSheet.create({
 
   compteButton: {
     position: 'absolute',
-    top: 1,
-    right: 50,
-    marginBottom: 50,
-    marginTop: 30,
     zIndex: 100,
     width: 158, // Largeur fixe pour éviter le décalage lors du changement de texte
   },
