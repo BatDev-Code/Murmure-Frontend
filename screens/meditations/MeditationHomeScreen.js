@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -6,13 +6,16 @@ import {
   Pressable,
   SafeAreaView,
   Image,
+  Dimensions,
 } from "react-native";
 import DurationSelector from "../../components/DurationSelector";
 import Button from "../../components/Button";
 import { useState } from "react";
 import ParrotChatBtn from "../../components/ParrotChatBtn";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function MeditationHomeScreen({ navigation }) {
+  const { width, height } = Dimensions.get("window");
   // Récupération des states: theme de méditation, mode (guidée ou solo), duration
   const [theme, setTheme] = useState("anxiete");
   const [mode, setMode] = useState("guidee");
@@ -42,19 +45,12 @@ export default function MeditationHomeScreen({ navigation }) {
           <View style={styles.messageBubble}>
             <Text style={styles.messageText}>
               Bonjour, tu peux choisir le thème de la méditation qui te convient
-              le mieux aujourd'hui, ainsi que sa durée, tu pourras ensuite
-              lancer la méditation !
+              le mieux aujourd'hui! je peux soit te guider, soit te laisser
+              méditer seul! !
             </Text>
+            <View style={styles.bubblePic} />
 
             {/* Perroquet : ouvre modale Chat */}
-
-            {/* <Pressable onPress={() => navigation.navigate("Chat")}>
-              <Image
-                source={require("../../assets/chat/perroquet.png")}
-                style={styles.perroquet}
-              />
-            </Pressable> */}
-
             <ParrotChatBtn
               onPress={() => navigation.navigate("Chat")}
               style={styles.perroquet}
@@ -63,23 +59,6 @@ export default function MeditationHomeScreen({ navigation }) {
         </View>
 
         <View style={styles.body}>
-          {/* Choix du thème de méditation */}
-          <Text style={styles.label}>Thème de méditation</Text>
-          <View style={styles.choices}>
-            {meditationThemes.map((item) => (
-              <Pressable
-                key={item.value}
-                onPress={() => setTheme(item.value)}
-                style={[
-                  styles.choicesItem,
-                  theme === item.value && styles.choicesSelected,
-                ]}
-              >
-                <Text>{item.label}</Text>
-              </Pressable>
-            ))}
-          </View>
-
           {/* Choix guidée ou solo avec bouton segmenté */}
           <View style={styles.segment}>
             <Pressable
@@ -103,6 +82,33 @@ export default function MeditationHomeScreen({ navigation }) {
             </Pressable>
           </View>
 
+          <View
+            style={[
+              styles.themeBlock,
+              mode === "solo" && styles.themeBlockHidden,
+            ]}
+            pointerEvents={mode === "solo" ? "none" : "auto"}
+          >
+            {/* Choix du thème de méditation */}
+            <Text style={styles.label}>
+              Choix du thème de méditation guidée:
+            </Text>
+            <View style={styles.choices}>
+              {meditationThemes.map((item) => (
+                <Pressable
+                  key={item.value}
+                  onPress={() => setTheme(item.value)}
+                  style={[
+                    styles.choicesItem,
+                    theme === item.value && styles.choicesSelected,
+                  ]}
+                >
+                  <Text>{item.label}</Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+          
           {/* Choix de la durée avec composant de type Slider */}
           <DurationSelector
             mode={mode}
@@ -111,21 +117,20 @@ export default function MeditationHomeScreen({ navigation }) {
           />
         </View>
 
-        {/* Bouton démarrage */}
-        <View style={styles.footer}>
-          <Button
-            onPress={startMeditation}
-            label="Démarrer méditation"
-            type="primary"
-            style={styles.startButton}
-          />
-
-          {/* Bouton Précédent */}
-          <Button
-            onPress={() => navigation.navigate("Shelves")}
-            type="back"
+                {/* Footer */}
+        <View style={styles.navigationContainer}>
+          <Pressable
+            onPress={() => navigation.goBack()}
             style={styles.backButton}
-          />
+          >
+            <Ionicons name="arrow-back" size={20} color="#224c4aff" />
+            <Text style={styles.backButtonText}>Retour</Text>
+          </Pressable>
+
+          <Pressable onPress={startMeditation} style={styles.nextButton}>
+            <Text style={styles.nextButtonText}>Suivant</Text>
+            <Ionicons name="arrow-forward" size={20} color="#fff" />
+          </Pressable>
         </View>
       </View>
     </SafeAreaView>
@@ -148,6 +153,8 @@ const styles = StyleSheet.create({
   header: {
     paddingTop: 40,
     paddingBottom: 10,
+    positon: "relative",
+    alignSelf: "flex-start",
   },
 
   messageBubble: {
@@ -157,6 +164,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     width: "100%",
     position: "relative",
+    marginVertical: 15,
   },
 
   messageText: {
@@ -165,11 +173,19 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#224C4A",
   },
-
+  bubblePic: {
+    position: "absolute",
+    width: 16,
+    height: 16,
+    backgroundColor: "#D8F0E4",
+    bottom: -6,
+    right: 80,
+    transform: [{ rotate: "45deg" }],
+  },
   perroquet: {
     position: "absolute",
     right: -10,
-    bottom: -100,
+    bottom: -70,
     width: 100,
     height: 100,
     justifyContent: "center",
@@ -183,6 +199,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingTop: 25,
     paddingBottom: 20,
+  },
+  themeBlock: {},
+
+  themeBlockHidden: {
+    opacity: 0,
   },
 
   label: {
@@ -240,22 +261,46 @@ const styles = StyleSheet.create({
   },
 
   // footer
-  footer: {
-    marginTop: 10,
-    paddingTop: 10,
-    paddingBottom: 20,
-    justifyContent: "flex-end",
-  },
-
-  startButton: {
-    alignSelf: "center",
-    width: "80%",
+  navigationContainer: {
+    position: "absolute",
+    bottom: 40, // Distance du bas de l'écran
+    left: 0,
+    right: 0,
+    flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center",
+    gap: 40,
+    zIndex: 10,
   },
 
   backButton: {
-    marginTop: 12,
-    marginLeft: 5,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 10,
+    backgroundColor: "#D8F0E4",
+  },
+
+  backButtonText: {
+    color: "#224c4aff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+
+  nextButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 10,
+    backgroundColor: "#507C79",
+  },
+
+  nextButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

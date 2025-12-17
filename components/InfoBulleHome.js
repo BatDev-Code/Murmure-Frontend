@@ -5,13 +5,13 @@ const InfoBubble = ({ message, visible, onClose }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   // 1. Log à chaque rendu du composant
-  console.log(`[InfoBubble] Rendu du composant. Visible: ${visible}, Message: "${message}"`);
+  // console.log(`[InfoBubble] Rendu du composant. Visible: ${visible}, Message: "${message}"`);
 
   useEffect(() => {
     // console.log(`[InfoBubble] useEffect déclenché. État visible: ${visible}`);
 
     if (visible) {
-      console.log('[InfoBubble] 🟢 Condition TRUE : Démarrage animation apparition');
+      // console.log('[InfoBubble] 🟢 Condition TRUE : Démarrage animation apparition');
       
       // Animation d'apparition
       Animated.timing(fadeAnim, {
@@ -21,7 +21,7 @@ const InfoBubble = ({ message, visible, onClose }) => {
       }).start(() => console.log('[InfoBubble] ✨ Animation apparition terminée'));
 
       // Auto-fermeture après 4 secondes
-      console.log('[InfoBubble] ⏳ Démarrage du Timer (20s)');
+      // console.log('[InfoBubble] ⏳ Démarrage du Timer (20s)');
       const timer = setTimeout(() => {
         // console.log('[InfoBubble] ⏰ Timer écoulé -> Appel de onClose()');
         onClose();
@@ -45,7 +45,7 @@ const InfoBubble = ({ message, visible, onClose }) => {
 
   // LOGIQUE CRITIQUE ICI
   if (!visible) {
-    console.log('[InfoBubble] ⛔ Erreur : Le composant ne s\'affiche pas . Rendu est "null".');
+    // console.log('[InfoBubble] ⛔ Erreur : Le composant ne s\'affiche pas . Rendu est "null".');
     return null;
   }
 

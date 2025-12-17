@@ -263,9 +263,11 @@ export default function LessonScreen({ navigation, route }) {
 
       <ConfirmModal
         visible={showExitPopup}
-        message="Voulez-vous arrêter la leçon ?"
+        message="Voulez-vous quitter la leçon ?"
         onCancel={() => setShowExitPopup(false)}
         onConfirm={() => exitBehavior()}
+        confirmText="Quitter"
+        cancelText="Rester"
       />
     </View>
   );

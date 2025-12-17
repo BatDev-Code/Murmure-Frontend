@@ -6,6 +6,8 @@ export default function ConfirmModal({
   onConfirm,
   onCancel,
   singleButton = false, //par défaut, 2 boutons
+  confirmText = "Arrêter",
+  cancelText = "Continuer"
 }) {
   if (!visible) return null;
 
@@ -24,13 +26,14 @@ export default function ConfirmModal({
           </Pressable>
         ) : (
           <View style={styles.buttons}>
+            <Pressable style={[styles.btn, styles.confirm]} onPress={onConfirm}>
+              <Text style={styles.btnText}>{confirmText}</Text>
+            </Pressable>
+            
             <Pressable style={[styles.btn, styles.cancel]} onPress={onCancel}>
-              <Text style={styles.btnText}>Continuer</Text>
+              <Text style={styles.btnText}>{cancelText}</Text>
             </Pressable>
 
-            <Pressable style={[styles.btn, styles.confirm]} onPress={onConfirm}>
-              <Text style={styles.btnText}>Arrêter</Text>
-            </Pressable>
           </View>
         )}
       </View>
@@ -48,7 +51,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 10, // Needed for the modal to be shown in front of anything else 
+    zIndex: 10, // Needed for the modal to be shown in front of anything else
   },
   box: {
     width: "80%",
@@ -80,6 +83,7 @@ const styles = StyleSheet.create({
   btn: {
     flex: 1,
     paddingVertical: 12,
+    paddingHorizontal: 22,
     borderRadius: 10,
     alignItems: "center",
   },

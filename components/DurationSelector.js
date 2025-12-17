@@ -1,19 +1,19 @@
-import { View, Text, StyleSheet } from "react-native";
-import Slider from "@react-native-community/slider";
-import { useState, useEffect } from "react";
+import { View, Text, StyleSheet } from 'react-native';
+import Slider from '@react-native-community/slider';
+import { useState, useEffect } from 'react';
 
 // Slider: composant curseur, utilisé pour choisir les durées: méditation (solo ou guidée) et respiration
 
 export default function DurationSelector({
-  mode = "guidee", // "solo" | "guidee" | "respiration"
+  mode = 'guidee', // "solo" | "guidee" | "respiration"
   value, //valeur sélectionnée
-  onChange, //fonction du parent 
+  onChange, //fonction du parent
 }) {
   // valeurs spécifiques  méditations guidées
   const GUIDED_VALUES = [3, 5, 10];
 
   // logique selon mode guidé (pour alléger le)
-  const isGuided = mode === "guidee";
+  const isGuided = mode === 'guidee';
 
   const getSliderProps = () => {
     if (isGuided) {
@@ -26,16 +26,16 @@ export default function DurationSelector({
       };
     }
 
-    if (mode === "solo") {
+    if (mode === 'solo') {
       return {
         minimumValue: 1,
-        maximumValue: 20,//maxi 20 minutes
+        maximumValue: 20, //maxi 20 minutes
         step: 1,
-        sliderValue: value, //correspond à la value du curseur 
+        sliderValue: value, //correspond à la value du curseur
       };
     }
 
-    if (mode === "respiration") {
+    if (mode === 'respiration') {
       return {
         minimumValue: 1,
         maximumValue: 15,
@@ -47,11 +47,11 @@ export default function DurationSelector({
 
   const { minimumValue, maximumValue, step, sliderValue } = getSliderProps();
 
-// ceci est une version destructurée qui équivaut à dire: 
-// const sliderProps = getSliderProps();
-// const minimumValue = sliderProps.minimumValue;
+  // ceci est une version destructurée qui équivaut à dire:
+  // const sliderProps = getSliderProps();
+  // const minimumValue = sliderProps.minimumValue;
 
-// Ici on récupère la value transmise par le parent (durée)
+  // Ici on récupère la value transmise par le parent (durée)
   const handleChange = (sliderPosition) => {
     let newValue = sliderPosition;
 
@@ -67,7 +67,7 @@ export default function DurationSelector({
       <Text style={styles.label}>Durée : {value} min</Text>
 
       <Slider
-        style={{ width: "100%" }}
+        style={{ width: '100%' }}
         minimumValue={minimumValue}
         maximumValue={maximumValue}
         step={step}
@@ -78,13 +78,18 @@ export default function DurationSelector({
       />
 
       {/* repères visuels pour valeurs guidées */}
-      {isGuided && (
+      {isGuided ? (
         <View style={styles.marksContainer}>
           {GUIDED_VALUES.map((v) => (
             <Text key={v} style={styles.mark}>
               {v}
             </Text>
           ))}
+        </View>
+      ) : (
+        <View style={styles.marksContainer}>
+          <Text style={styles.mark}>{minimumValue}</Text>
+          <Text style={styles.mark}>{maximumValue}</Text>
         </View>
       )}
     </View>
@@ -97,12 +102,12 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
     marginBottom: 10,
   },
   marksContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginTop: 8,
   },
   mark: {

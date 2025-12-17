@@ -7,6 +7,7 @@ import {
   ImageBackground,
   Image,
   TouchableOpacity,
+  Pressable
 } from 'react-native';
 
 import Button from '../../components/Button';
@@ -16,6 +17,8 @@ import { useState, useEffect } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { setAllChapters } from '../../reducers/chapters';
+
+import { Ionicons } from '@expo/vector-icons';
 
 export default function MapScreen({ navigation }) {
   const [progress, setProgress] = useState(1); // valeur initiale 1
@@ -105,11 +108,20 @@ export default function MapScreen({ navigation }) {
         </Label>
 
         {/* Bouton Précédent */}
-        <Button
+        {/* <Button
           style={styles.btnBack}
           onPress={() => navigation.goBack()}
           type="back"
-        />
+        /> */}
+        <View style={styles.navigationContainer}>
+          <Pressable
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="arrow-back" size={20} color="#224c4aff" />
+            <Text style={styles.backButtonText}>Retour</Text>
+          </Pressable>
+        </View>
       </View>
     </ImageBackground>
   );
@@ -234,10 +246,31 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     // textDecorationLine: "underline",
   },
-
-  btnBack: {
+ 
+  navigationContainer: {
     position: 'absolute',
     bottom: 40,
-    left: 20,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 30,
+    zIndex: 10,
+  },
+
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 10,
+    backgroundColor: '#d8f0e4bc',
+  },
+
+  backButtonText: {
+    color: '#224c4aff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
