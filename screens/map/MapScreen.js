@@ -1,12 +1,6 @@
 import { BACKEND_ADDRESS } from '../../config';
 
-import {
-  View,
-  Text,
-  StyleSheet,
-  ImageBackground,
-  Pressable
-} from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, Pressable } from 'react-native';
 
 import Button from '../../components/Button';
 import ChapterButton from '../../components/ChapterButton';
@@ -18,18 +12,32 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setAllChapters } from '../../reducers/chapters';
 
 import { Ionicons } from '@expo/vector-icons';
+import useResponsiveImagePosition from '../../hooks/useResponsiveImagePosition';
 
 export default function MapScreen({ navigation }) {
-  const [progress, setProgress] = useState(1); // valeur initiale 1
   const TOTAL_LESSONS = 6;
   const [showLockedModal, setShowLockedModal] = useState(false);
+  const [showNotConnectedModal, setShowNotConnectedModal] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [showMessageBubble, setShowMessageBubble] = useState(true);
 
   const dispatch = useDispatch();
 
-  // Récupérer le progressNb de l'utilisateur depuis Redux
-  const userProgressNb = useSelector(
-    (state) => state.userConnection?.userProgress || 0
-  );
+  // Utilisation du hook pour positionner les boutons de chapitre de façon responsive
+  const backgroundImage = require('../../assets/map.png');
+  const { getPos, scale, originalW, originalH } = useResponsiveImagePosition(backgroundImage);
+
+  // Positions des chapitres en pourcentages de l'image originale
+  const posChapitre1 = getPos(originalW * 0.55, originalH * 0.87);
+  const posChapitre2 = getPos(originalW * 0.33, originalH * 0.76);
+  const posChapitre3 = getPos(originalW * 0.72, originalH * 0.74);
+  const posChapitre4 = getPos(originalW * 0.1, originalH * 0.62);
+  const posChapitre5 = getPos(originalW * 0.45, originalH * 0.5);
+  const posChapitre6 = getPos(originalW * 0.72, originalH * 0.3);
+
+  // Récupérer le progressNb et le statut de connexion de l'utilisateur depuis Redux
+  const userProgressNb = useSelector((state) => state.userConnection?.userProgress || 0);
+  const isConnected = useSelector((state) => state.userConnection?.isConnected || false);
 
   // Fonction pour valider l'accès à un chapitre
   const handleChapterPress = (chapterNumber, lessonNumber) => {
@@ -39,7 +47,13 @@ export default function MapScreen({ navigation }) {
       return;
     }
 
-    // Pour les chapitres > 1, vérifier si le chapitre précédent a été validé
+    // Pour les chapitres > 1, vérifier d'abord si l'utilisateur est connecté
+    if (!isConnected) {
+      setShowNotConnectedModal(true);
+      return;
+    }
+
+    // Si connecté, vérifier si le chapitre précédent a été validé
     if (userProgressNb >= chapterNumber - 1) {
       navigation.navigate('Lesson', { lessonNumber });
     } else {
@@ -57,76 +71,84 @@ export default function MapScreen({ navigation }) {
       });
   }, []);
 
-  // --> Au démarrage dans un use Effect on récupérer la valeur du progress et on fait setProgress(nbreçu)
+  useEffect(() => {
+    if (userProgressNb === 0) {
+      setShowWelcomeModal(true);
+    }
+  }, []);
 
   return (
-    <ImageBackground
-      style={styles.background}
-      source={require('../../assets/map.png')}
-      resizeMode="cover"
-    >
-      {/* Chat modale */}
-      <ParrotChatBtn
-        onPress={() => navigation.navigate('Chat')}
-        style={styles.perroquet}
-      />
+    <ImageBackground style={styles.background} source={require('../../assets/map.png')} resizeMode="cover">
+      {showMessageBubble && (
+        <View style={styles.header}>
+          <View style={styles.messageBubble}>
+            <Pressable style={styles.closeButton} onPress={() => setShowMessageBubble(false)}>
+              <Ionicons name="close" size={20} color="#224C4A" />
+            </Pressable>
 
-      {/* Barre de progres */}
+            <Text style={styles.messageText}>Bonne aventure ! Je suis disponible pour chatter à tout moment.</Text>
+            <View style={styles.bubblePic} />
+          </View>
+        </View>
+      )}
+
+      <ParrotChatBtn onPress={() => navigation.navigate('Chat')} style={styles.perroquet} />
+
       <View style={styles.progressContainer}>
         <View style={styles.progressBackground}>
-          <View
-            style={[
-              styles.progressFill,
-              { width: `${(progress / TOTAL_LESSONS) * 100}%` },
-            ]}
-          />
+          <View style={[styles.progressFill, { width: `${(userProgressNb / TOTAL_LESSONS) * 100}%` }]} />
         </View>
 
         <Text style={styles.progressText}>
-          Étape {progress} / {TOTAL_LESSONS}
+          Étape {userProgressNb} / {TOTAL_LESSONS}
         </Text>
       </View>
 
       <View style={styles.container}>
-        {/* <Text style={styles.title}>Bienvenue sur la Carte</Text>
-          <Text style={styles.subtitle}>Ecran Map</Text> */}
+        <ChapterButton
+          chapterNumber={6}
+          progressNb={userProgressNb}
+          onPress={() => handleChapterPress(6, 5)}
+          style={posChapitre6}
+        />
 
-        {/* Labels vers Meditations, respirations, chat */}
-        {/* Chapitre 3 */}
+        <ChapterButton
+          chapterNumber={5}
+          progressNb={userProgressNb}
+          onPress={() => handleChapterPress(5, 4)}
+          style={posChapitre5}
+        />
+
+        <ChapterButton
+          chapterNumber={4}
+          progressNb={userProgressNb}
+          onPress={() => handleChapterPress(4, 3)}
+          style={posChapitre4}
+        />
+
         <ChapterButton
           chapterNumber={3}
           progressNb={userProgressNb}
           onPress={() => handleChapterPress(3, 2)}
-          style={styles.chapitre3}
+          style={posChapitre3}
         />
 
-        {/* Chapitre 2 */}
         <ChapterButton
           chapterNumber={2}
           progressNb={userProgressNb}
           onPress={() => handleChapterPress(2, 1)}
-          style={styles.chapitre2}
+          style={posChapitre2}
         />
 
-        {/* Chapitre 1 */}
         <ChapterButton
           chapterNumber={1}
           progressNb={userProgressNb}
           onPress={() => handleChapterPress(1, 0)}
-          style={styles.chapitre1}
+          style={posChapitre1}
         />
 
-        {/* Bouton Précédent */}
-        {/* <Button
-          style={styles.btnBack}
-          onPress={() => navigation.goBack()}
-          type="back"
-        /> */}
-        <View style={styles.navigationContainer}>
-          <Pressable
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
+        <View style={styles.navigationContainer} pointerEvents="box-none">
+          <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={20} color="#224c4aff" />
             <Text style={styles.backButtonText}>Retour</Text>
           </Pressable>
@@ -139,6 +161,20 @@ export default function MapScreen({ navigation }) {
         onConfirm={() => setShowLockedModal(false)}
         singleButton={true}
       />
+
+      <ConfirmModal
+        visible={showNotConnectedModal}
+        message="Il faut un compte pour accéder à ce chapitre."
+        onConfirm={() => setShowNotConnectedModal(false)}
+        singleButton={true}
+      />
+
+      <ConfirmModal
+        visible={showWelcomeModal}
+        message="Bienvenue dans la Forêt ! Allume successivement les feux pour parcourir le chemin :)"
+        onConfirm={() => setShowWelcomeModal(false)}
+        singleButton={true}
+      />
     </ImageBackground>
   );
 }
@@ -148,17 +184,59 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
-    // alignItems: "center",
-    // justifyContent: "center",
   },
 
+  // header perroquet
+  header: {
+    position: 'absolute',
+    top: 40,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 20,
+    zIndex: 5,
+  },
+  messageBubble: {
+    backgroundColor: '#D8F0E4',
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+    borderRadius: 18,
+    width: '70%',
+    position: 'relative',
+    marginVertical: 15,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    zIndex: 10,
+    padding: 4,
+  },
+  messageText: {
+    fontSize: 15.5,
+    lineHeight: 21,
+    fontWeight: '500',
+    color: '#224C4A',
+    paddingRight: 30, // Espace pour la croix
+  },
+  bubblePic: {
+    position: 'absolute',
+    width: 16,
+    height: 16,
+    backgroundColor: '#D8F0E4',
+    top: 30,
+    right: -6,
+    transform: [{ rotate: '45deg' }],
+  },
   perroquet: {
     position: 'absolute',
     top: 60,
     right: 20,
     width: 100,
     height: 100,
-    transform: [{ scaleX: -1 }], // Inverse l'image horizontalement
+    justifyContent: 'center',
+    alignItems: 'center',
+    transform: [{ scaleX: -1 }], //perroquet retourné miroir
+    zIndex: 10,
   },
 
   container: {
@@ -168,7 +246,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
   },
-  // Progressbar
+
   progressContainer: {
     position: 'absolute',
     top: 160,
@@ -201,21 +279,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
   },
 
-  chapitre1: {
-    top: 767,
-    left: 236,
-  },
-
-  chapitre2: {
-    top: 642,
-    left: 313,
-  },
-
-  chapitre3: {
-    top: 604,
-    left: 30,
-  },
- 
   navigationContainer: {
     position: 'absolute',
     bottom: 40,

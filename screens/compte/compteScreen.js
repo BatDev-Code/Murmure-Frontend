@@ -1,4 +1,5 @@
 import {
+  SafeAreaView,
   View,
   Text,
   TextInput,
@@ -137,7 +138,7 @@ export default function CompteScreen({ navigation }) {
         resizeMode="cover"
       >
         <SafeAreaView style={styles.safeArea}>
-          <View style={styles.container}>
+          <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
             <Text style={styles.title}>Gestion du compte</Text>
             <Text style={styles.welcomeText}>Bonjour {username} !</Text>
 
@@ -256,6 +257,10 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: 'transparent',
   },
   container: {
     flex: 1,

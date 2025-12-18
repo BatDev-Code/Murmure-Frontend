@@ -1,25 +1,11 @@
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 
-export default function ChapterButton({
-  chapterNumber,
-  progressNb,
-  onPress,
-  style,
-}) {
+export default function ChapterButton({ chapterNumber, progressNb, onPress, style }) {
   const imageSource =
-    chapterNumber <= progressNb
-      ? require('../assets/feudebois.png')
-      : require('../assets/feusansfeu.png');
+    chapterNumber <= progressNb ? require('../assets/feudebois.png') : require('../assets/feusansfeu.png');
 
   return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.container,
-        style,
-        pressed && styles.pressed,
-      ]}
-    >
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.container, style, pressed && styles.pressed]}>
       <Image source={imageSource} style={styles.image} />
       <View style={styles.labelContainer}>
         <Text style={styles.label} numberOfLines={1}>
