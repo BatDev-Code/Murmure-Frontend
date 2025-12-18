@@ -75,6 +75,8 @@ const styles = StyleSheet.create({
   infoBubbleContainer: {
     position: 'absolute',
     top: 60,
+    bottom: 670,
+   
     left: 20,
     right: 20,
     zIndex: 1000,

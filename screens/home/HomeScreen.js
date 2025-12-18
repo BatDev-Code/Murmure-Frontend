@@ -108,9 +108,11 @@ export default function HomeScreen({ navigation }) {
 
   // --- DÉFINITION DES POSITIONS EN POURCENTAGES ---
 
-  const posEtagere = getPos(originalW * -0.2, originalH * 0.5); // PULSING BUTTON ÉTAGÈRE
-  const posCarte = getPos(originalW * 0.36, originalH * 0.5); // PULSING BUTTON CARTE
-  const posPerroquet = getPos(originalW * 0.48, originalH * 0.128); // POSITION PERROQUET CHAT - juste au-dessus de la porte
+  const posEtagere = getPos(originalW * -0.20, originalH * 0.50);                   // PULSING BUTTON ÉTAGÈRE
+  const posCarte = getPos(originalW * 0.36, originalH * 0.50);                      // PULSING BUTTON CARTE
+  const posPerroquet = getPos(originalW * 0.42, originalH * 0.162);                 // POSITION PERROQUET CHAT
+  const posButton = getPos(originalW * -0.29, originalH * -0.007);                      // POSITION BOUTON MON COMPTE              
+             // POSITION INFO BULLE
 
   const { isConnected, username } = useSelector((state) => state.userConnection); // Récupérer le statut de connexion depuis Redux
 
@@ -193,16 +195,18 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <ImageBackground style={styles.background} source={require('../../assets/homescreenCadre.png')} resizeMode="cover">
-      {/* Bulle d'information - EN DEHORS DU CONTAINER */}
-      <InfoBubble message={infoBubble.message} visible={infoBubble.visible} onClose={closeInfoBubble} />
+      <View style={[styles.container, { top: Math.max(insets.top - 16, 10)}]}>
+        
+        {/* Bulle d'information */}
+        <InfoBubble message={infoBubble.message} visible={infoBubble.visible} onClose={closeInfoBubble}  />
 
-      <View style={[styles.container, { top: Math.max(insets.top - 16, 10) }]}>
         <View style={styles.labelContainer}>
-          {/* Bouton Mon Compte en haut à droite */}
+
+          {/* Bouton Mon Compte en haut à gauche */}
           <Button
-            label={isConnected ? 'Mon compte' : 'Se Connecter'} // Texte dynamique basé sur le redux
+            label={isConnected ? 'Mon compte' : 'Se Connecter'}  // Texte dynamique basé sur le redux
             type="primary"
-            style={[styles.compteButton]} // Position adaptative : 31px sur notch, min 10px sur anciens iPhone
+            style={[styles.compteButton, posButton]}             // Position adaptative : 31px sur notch, min 10px sur anciens iPhone
             onPress={() => {
               // console.log("ok le btn mon compte fonctionne!");
               navigation.navigate('Compte');
@@ -211,13 +215,11 @@ export default function HomeScreen({ navigation }) {
 
           <View style={styles.header}>
             <View style={styles.messageBubble}>
+
               {/* Perroquet : ouvre screen Chat */}
               <ParrotChatBtn
-                onPress={() => {
-                  navigation.navigate('Chat');
-                }}
-                style={[
-                  posPerroquet,
+                onPress={() => {navigation.navigate('Chat');}}
+                style={[posPerroquet,
                   {
                     width: 100 * scale,
                     height: 100 * scale,
