@@ -90,9 +90,9 @@ const PulsingButton = ({ onPress, color, style, buttonScale = 1 }) => {
           styles.buttonCenter,
           {
             backgroundColor: 'transparent',
-            width: 55 * buttonScale, // Taille augmentée : 40 → 55
-            height: 55 * buttonScale,
-            borderRadius: 27.5 * buttonScale, // Ajusté pour rester circulaire (55/2)
+            width: 80 * buttonScale,  // Taille augmentée : 40 → 55
+            height: 80 * buttonScale,
+            borderRadius: 80 * buttonScale, // Ajusté pour rester circulaire (55/2)
           },
         ]}
       />
