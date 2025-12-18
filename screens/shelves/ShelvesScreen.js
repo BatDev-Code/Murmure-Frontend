@@ -155,9 +155,9 @@ const PulsingButton = ({ onPress, color, style, buttonScale = 1 }) => {
             onPress={onPress}
             style={[styles.buttonCenter, {
               backgroundColor: "transparent",
-              width: 30 * buttonScale,
-              height: 30 * buttonScale,
-              borderRadius: 15 * buttonScale,
+              width: 80 * buttonScale,
+              height: 80 * buttonScale,
+              borderRadius: 80 * buttonScale,
             }]}
           />
         </View>

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, Platform } from 'react-native';
 
 const InfoBubble = ({ message, visible, onClose }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -54,7 +54,9 @@ const InfoBubble = ({ message, visible, onClose }) => {
   return (
     <View style={styles.infoBubbleContainer}>
       <View style={styles.infoBubble}>
-        <Text style={styles.infoBubbleText}>{message}</Text>
+        <Text allowFontScaling={false} style={styles.infoBubbleText}>
+          {message}
+        </Text>
 
         {/* Bouton de fermeture */}
         <TouchableOpacity
@@ -74,10 +76,13 @@ const InfoBubble = ({ message, visible, onClose }) => {
 const styles = StyleSheet.create({
   infoBubbleContainer: {
     position: 'absolute',
-    top: 95,
-    left: 20,
-    right: 20,
+    top: Platform.select({
+      ios: 50, // On descend plus bas sur iOS (teste 80, 90 ou 100)
+      android: 60, // On garde ta valeur actuelle pour Android
+    }),
     zIndex: 1000,
+    width: '100%', // Prend 100% de la largeur disponible dans le parent (qui a déjà du padding)
+    alignSelf: 'center', // S'assure d'être bien centré
   },
 
   infoBubble: {
@@ -95,8 +100,10 @@ const styles = StyleSheet.create({
 
   infoBubbleText: {
     color: '#FFFFFF',
-    fontSize: 14,
+    fontSize: 14, // On grossit un poil sur Android si besoin
+    fontSize: Platform.OS === 'android' ? 15 : 13, // On grossit un poil sur Android si besoin    fontWeight: '600',
     fontWeight: '600',
+    lineHeight: 22, // Impératif pour que le texte "s'empile" pareil
     flex: 1,
     lineHeight: 20,
     paddingRight: 10,

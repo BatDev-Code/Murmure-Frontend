@@ -1,14 +1,7 @@
 import { BACKEND_ADDRESS } from '../../config';
 
 import React, { useEffect, useState, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ImageBackground,
-  Animated,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Animated, Platform } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -90,9 +83,9 @@ const PulsingButton = ({ onPress, color, style, buttonScale = 1 }) => {
           styles.buttonCenter,
           {
             backgroundColor: 'transparent',
-            width: 55 * buttonScale, // Taille augmentée : 40 → 55
-            height: 55 * buttonScale,
-            borderRadius: 27.5 * buttonScale, // Ajusté pour rester circulaire (55/2)
+            width: 80 * buttonScale, // Taille augmentée : 40 → 55
+            height: 80 * buttonScale,
+            borderRadius: 80 * buttonScale, // Ajusté pour rester circulaire (55/2)
           },
         ]}
       />
@@ -110,7 +103,12 @@ export default function HomeScreen({ navigation }) {
 
   const posEtagere = getPos(originalW * -0.2, originalH * 0.5); // PULSING BUTTON ÉTAGÈRE
   const posCarte = getPos(originalW * 0.36, originalH * 0.5); // PULSING BUTTON CARTE
-  const posPerroquet = getPos(originalW * 0.48, originalH * 0.18); // POSITION PERROQUET CHAT - juste au-dessus de la porte
+  const posButton = getPos(originalW * -0.29, originalH * -0.007); // POSITION BOUTON MON COMPTE
+
+  // POSITION PERROQUET
+  const parrotPosY = Platform.OS === 'ios' ? 0.11 : 0.140;
+  const parrotPosX = Platform.OS === 'ios' ? 0.43 : 0.42;
+  const posPerroquet = getPos(originalW * parrotPosX, originalH * parrotPosY);
 
   const { isConnected, username } = useSelector((state) => state.userConnection); // Récupérer le statut de connexion depuis Redux
 
@@ -193,16 +191,16 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <ImageBackground style={styles.background} source={require('../../assets/homescreenCadre.png')} resizeMode="cover">
-      {/* Bulle d'information - EN DEHORS DU CONTAINER */}
-      <InfoBubble message={infoBubble.message} visible={infoBubble.visible} onClose={closeInfoBubble} />
-
       <View style={[styles.container, { top: Math.max(insets.top - 16, 10) }]}>
+        {/* Bulle d'information */}
+        <InfoBubble message={infoBubble.message} visible={infoBubble.visible} onClose={closeInfoBubble} />
+
         <View style={styles.labelContainer}>
-          {/* Bouton Mon Compte en haut à droite */}
+          {/* Bouton Mon Compte en haut à gauche */}
           <Button
             label={isConnected ? 'Mon compte' : 'Se Connecter'} // Texte dynamique basé sur le redux
             type="primary"
-            style={[styles.compteButton]} // Position adaptative : 31px sur notch, min 10px sur anciens iPhone
+            style={[styles.compteButton, posButton]} // Position adaptative : 31px sur notch, min 10px sur anciens iPhone
             onPress={() => {
               // console.log("ok le btn mon compte fonctionne!");
               navigation.navigate('Compte');
@@ -268,8 +266,8 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    // alignItems: 'center',
+    // justifyContent: 'center',
     paddingHorizontal: 20,
   },
 
