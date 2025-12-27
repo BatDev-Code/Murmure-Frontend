@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: murmure-frontend
+    runtime: node
+    env: node
+    region: frankfurt
+    plan: free
+    buildCommand: npm install && npx expo export -p web
+    startCommand: npx serve dist -s -n -p $PORT
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: EXPO_PUBLIC_BACKEND_URL
+        sync: false
