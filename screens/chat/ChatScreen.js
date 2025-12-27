@@ -40,14 +40,27 @@ export default function ChatScreen({ route, navigation }) {
 
   // Connexion au serveur Socket.IO
   useEffect(() => {
+    console.log('Connecting to backend:', BACKEND_ADDRESS);
     const newSocket = io(BACKEND_ADDRESS, {
-      transports: ['websocket'],
+      transports: ['websocket', 'polling'], // Fallback sur polling si websocket échoue
       auth: { token: userToken, username: username }, //on envoie le token
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
 
     setSocket(newSocket);
 
+    newSocket.on('connect', () => {
+      console.log('Socket connected!', newSocket.id);
+    });
+
+    newSocket.on('connect_error', (error) => {
+      console.error('Connection error:', error);
+    });
+
     newSocket.on('chat-history', (history) => {
+      console.log('Received chat history:', history);
       // Besoin de transformer le backend en format du front
       const formatted = history
         .filter((m) => m.role !== 'system')
