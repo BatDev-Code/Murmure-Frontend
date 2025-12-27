@@ -103,12 +103,12 @@ export default function HomeScreen({ navigation }) {
 
   const posEtagere = getPos(originalW * -0.2, originalH * 0.5); // PULSING BUTTON ÉTAGÈRE
   const posCarte = getPos(originalW * 0.36, originalH * 0.5); // PULSING BUTTON CARTE
-  const posButton = getPos(originalW * -0.29, originalH * -0.007); // POSITION BOUTON MON COMPTE
+  const posButton = getPos(originalW * -0.29, originalH * -0.02); // POSITION BOUTON MON COMPTE
 
   // POSITION PERROQUET
-  const parrotPosY = Platform.OS === 'ios' ? 0.11 : 0.140;
+  const parrotPosY = Platform.OS === 'ios' ? 0.146 : 0.140;
   const parrotPosX = Platform.OS === 'ios' ? 0.43 : 0.42;
-  const posPerroquet = getPos(originalW * parrotPosX, originalH * parrotPosY);
+  const posPerroquet = getPos(originalW * parrotPosX, originalH * parrotPosY); 
 
   const { isConnected, username } = useSelector((state) => state.userConnection); // Récupérer le statut de connexion depuis Redux
 

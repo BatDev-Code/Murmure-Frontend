@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   infoBubbleContainer: {
     position: 'absolute',
     top: Platform.select({
-      ios: 50, // On descend plus bas sur iOS (teste 80, 90 ou 100)
+      ios: 70, // On descend plus bas sur iOS (teste 80, 90 ou 100)
       android: 60, // On garde ta valeur actuelle pour Android
     }),
     zIndex: 1000,

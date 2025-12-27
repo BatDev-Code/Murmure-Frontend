@@ -7,6 +7,8 @@
     "android": "npx expo start --android",
     "ios": "npx expo start --ios",
     "web": "npx expo start --web",
+    "build:web": "npx expo export -p web",
+    "serve": "npx serve dist -s -n -p $PORT",
     "test": "jest"
   },
   "dependencies": {
@@ -42,6 +44,7 @@
     "jest-expo": "^54.0.16",
     "react-dom": "19.1.0",
     "react-native-web": "^0.21.2",
-    "react-test-renderer": "19.1.0"
+    "react-test-renderer": "19.1.0",
+    "serve": "^14.2.4"
   }
 }
